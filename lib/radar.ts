@@ -358,38 +358,38 @@ function gasFor(chain: string): { once: string; weekly: string } {
 type Action = (name: string, capital: number, chain: string) => string;
 
 const ACTIONS: [string[], Action][] = [
-  [['lend', 'cdp', 'collateral'], (n, c, ch) => `Lend $${c} of USDC on ${n} on ${ch} and leave the deposit earning.`],
-  [['dex'], (n, c, ch) => `Add $${c} of liquidity to ${n}'s deepest pool on ${ch} and leave it in place.`],
-  [['yield', 'farm'], (n, c, ch) => `Deposit $${c} into ${n}'s highest-TVL vault on ${ch} and hold the receipt tokens.`],
-  [['bridge'], (n, c, ch) => `Bridge $${c} of USDC through ${n} onto ${ch} and use the funds in its app.`],
-  [['staking', 'restak'], (n, c, ch) => `Stake $${c} of the native asset through ${n} on ${ch} and keep the receipt token.`],
-  [['perpetual', 'derivative'], (n, c, ch) => `Post $${c} of USDC as margin on ${n} and open one small hedged position.`],
-  [['prediction'], (n, c, ch) => `Fund ${n} with $${c} and take one small position in an open market.`],
-  [['curator', 'allocator'], (n, c, ch) => `Deposit $${c} into a ${n} curator vault on ${ch} and hold the shares.`],
-  [['stable', 'algo-stables', 'dual-token'], (n, c, ch) => `Mint or hold $${c} of ${n}'s stable asset on ${ch}.`],
-  [['rwa'], (n, c, ch) => `Mint $${c} of ${n}'s tokenised asset on ${ch} and hold it.`],
-  [['insurance'], (n, c, ch) => `Buy $${c} of cover from ${n} on ${ch} and keep the policy live.`],
-  [['basis'], (n, c, ch) => `Deposit $${c} into ${n}'s basis vault on ${ch} and hold the position.`],
-  [['launchpad'], (n, c, ch) => `Stake or hold $${c} through ${n} to qualify for its next launch allocation.`],
-  [['liquidity manager'], (n, c, ch) => `Deposit $${c} into a ${n}-managed pool on ${ch} and leave it managed.`],
-  [['index'], (n, c, ch) => `Buy $${c} of ${n}'s index token on ${ch} and hold it.`],
-  [['payment'], (n, c, ch) => `Route $${c} of payments through ${n} on ${ch} across the month.`],
-  [['nft'], (n, c, ch) => `List or buy one item on ${n} with $${c} of funds on ${ch}.`],
-  [['locker'], (n, c, ch) => `Lock $${c} of tokens through ${n} on ${ch} for the stated term.`],
-  [['governance'], (n, c, ch) => `Deposit $${c} and vote once on ${n}'s current proposal.`],
-  [['ai agent', 'decentralized ai'], (n, c, ch) => `Fund ${n} with $${c} on ${ch} and run one agent task.`],
-  [['privacy'], (n, c, ch) => `Shield $${c} through ${n} on ${ch} and keep the note safe.`],
-  [['option'], (n, c, ch) => `Buy one ${n} option with $${c} of premium on ${ch}.`],
-  [['synthetic'], (n, c, ch) => `Mint $${c} of ${n}'s synthetic asset on ${ch} and hold it.`],
-  [['interest rate'], (n, c, ch) => `Deposit $${c} into ${n}'s rate market on ${ch}.`],
-  [['reserve currency'], (n, c, ch) => `Bond $${c} through ${n} on ${ch} and hold the receipt.`],
-  [['btc'], (n, c, ch) => `Deposit $${c} of BTC exposure through ${n} on ${ch}.`],
-  [['cedefi'], (n, c, ch) => `Deposit $${c} into ${n}'s managed account on ${ch}.`],
-  [['card'], (n, c, ch) => `Load $${c} onto a ${n} card and spend it through the month.`],
-  [['otc'], (n, c, ch) => `Place one $${c} order on ${n}'s OTC desk on ${ch}.`],
-  [['dor'], (n, c, ch) => `Deposit $${c} into ${n}'s rate vault on ${ch}.`],
-  [['wrapper'], (n, c, ch) => `Wrap $${c} through ${n} on ${ch} and hold the wrapped asset.`],
-  [['chain'], (n, c, ch) => `Bridge $${c} to ${n}'s chain and use one of its apps.`],
+  [['lend', 'cdp', 'collateral'], (n, c, ch) => `Supply $${c} of USDC on ${n} on ${ch}, then borrow $${Math.floor(c / 2)} of USDC against it at under 50% loan-to-value and leave both legs open.`],
+  [['dex'], (n, c, ch) => `Add $${c} of liquidity to ${n}'s deepest pool on ${ch} in a 50/50 pair, then swap $10 through the pool once to register activity.`],
+  [['yield', 'farm'], (n, c, ch) => `Deposit $${c} into ${n}'s highest-TVL vault on ${ch}, hold the receipt tokens, and note the vault's deposit fee.`],
+  [['bridge'], (n, c, ch) => `Bridge $${c} of USDC through ${n} onto ${ch}, then use half of it in one app on ${ch}.`],
+  [['staking', 'restak'], (n, c, ch) => `Stake $${c} of the native asset through ${n} on ${ch}, keep the receipt token, and delegate to an active validator.`],
+  [['perpetual', 'derivative'], (n, c, ch) => `Post $${c} of USDC as margin on ${n}, open one small long and one small short to stay delta-neutral, and set a stop at 5%.`],
+  [['prediction'], (n, c, ch) => `Fund ${n} with $${c} and take one small position in an open market, sized under 10% of the deposit.`],
+  [['curator', 'allocator'], (n, c, ch) => `Deposit $${c} into a ${n} curator vault on ${ch}, hold the shares, and check the curator's allocation each week.`],
+  [['stable', 'algo-stables', 'dual-token'], (n, c, ch) => `Mint or hold $${c} of ${n}'s stable asset on ${ch} and supply half of it to its savings pool.`],
+  [['rwa'], (n, c, ch) => `Mint $${c} of ${n}'s tokenised asset on ${ch}, hold it, and read the asset's redemption terms first.`],
+  [['insurance'], (n, c, ch) => `Buy $${c} of cover from ${n} on ${ch} for a 30-day term and keep the policy live.`],
+  [['basis'], (n, c, ch) => `Deposit $${c} into ${n}'s basis vault on ${ch} and hold the position through one full funding cycle.`],
+  [['launchpad'], (n, c, ch) => `Stake or hold $${c} through ${n} to qualify for its next launch allocation and register for the next sale.`],
+  [['liquidity manager'], (n, c, ch) => `Deposit $${c} into a ${n}-managed pool on ${ch} and leave the range managed for the full hold.`],
+  [['index'], (n, c, ch) => `Buy $${c} of ${n}'s index token on ${ch}, hold it, and note the index's next rebalance date.`],
+  [['payment'], (n, c, ch) => `Route $${c} of payments through ${n} on ${ch} across the month in at least four separate payments.`],
+  [['nft'], (n, c, ch) => `List or buy one item on ${n} with $${c} of funds on ${ch} and complete one sale or purchase.`],
+  [['locker'], (n, c, ch) => `Lock $${c} of tokens through ${n} on ${ch} for the stated term and note the unlock date.`],
+  [['governance'], (n, c, ch) => `Deposit $${c} and vote once on ${n}'s current proposal, then delegate the remainder.`],
+  [['ai agent', 'decentralized ai'], (n, c, ch) => `Fund ${n} with $${c} on ${ch}, run one agent task, and keep the task receipt.`],
+  [['privacy'], (n, c, ch) => `Shield $${c} through ${n} on ${ch}, keep the note safe, and unshield $10 once to prove the flow works.`],
+  [['option'], (n, c, ch) => `Buy one ${n} option with $${c} of premium on ${ch} and hold it to expiry or a 2x move.`],
+  [['synthetic'], (n, c, ch) => `Mint $${c} of ${n}'s synthetic asset on ${ch} at 150% collateral and hold it.`],
+  [['interest rate'], (n, c, ch) => `Deposit $${c} into ${n}'s rate market on ${ch} and fix the rate for one term.`],
+  [['reserve currency'], (n, c, ch) => `Bond $${c} through ${n} on ${ch} and hold the receipt to vesting.`],
+  [['btc'], (n, c, ch) => `Deposit $${c} of BTC exposure through ${n} on ${ch} and hold the receipt token.`],
+  [['cedefi'], (n, c, ch) => `Deposit $${c} into ${n}'s managed account on ${ch} and read its withdrawal terms first.`],
+  [['card'], (n, c, ch) => `Load $${c} onto a ${n} card and spend it in at least four purchases through the month.`],
+  [['otc'], (n, c, ch) => `Place one $${c} order on ${n}'s OTC desk on ${ch} and settle it in full.`],
+  [['dor'], (n, c, ch) => `Deposit $${c} into ${n}'s rate vault on ${ch} and hold for one rate period.`],
+  [['wrapper'], (n, c, ch) => `Wrap $${c} through ${n} on ${ch}, hold the wrapped asset, and unwrap $10 once to test redemption.`],
+  [['chain'], (n, c, ch) => `Bridge $${c} to ${n}'s chain, use one of its apps, and leave a small balance for gas.`],
 ];
 
 /** The category's action: the first table row whose keyword the category carries, else the default. */
@@ -401,17 +401,27 @@ function actionFor(p: Protocol, capital: number, chain: string): string {
   return `Deposit $${capital} of USDC into ${p.name} on ${chain} and keep the position open.`;
 }
 
-/** The weekly qualifying action, by category keyword. */
+/** The weekly qualifying action, by category keyword: one concrete repeat action per category. */
 const WEEKLY: [string[], string][] = [
-  [['lend', 'cdp', 'collateral'], 'Borrow $20 against the deposit and repay it the same week.'],
-  [['dex'], 'Swap $10 through the pool once.'],
+  [['lend', 'cdp', 'collateral'], 'Borrow $20 against the deposit and repay it the same week; keep the loan under 50% of the deposit.'],
+  [['dex'], 'Swap $10 through the pool once and add $5 of liquidity.'],
   [['yield', 'farm'], "Harvest and re-deposit the week's yield once."],
   [['bridge'], 'Bridge $10 back or to a second chain once.'],
-  [['staking', 'restak'], "Claim the week's staking rewards once."],
-  [['perpetual', 'derivative'], 'Close and reopen the hedge once.'],
-  [['prediction'], 'Take one new small market position.'],
+  [['staking', 'restak'], "Claim the week's staking rewards once and restake half."],
+  [['perpetual', 'derivative'], 'Close and reopen the hedge once; keep the position delta-neutral.'],
+  [['prediction'], 'Take one new small market position, under $10.'],
   [['curator', 'allocator'], "Rebalance into the vault's newest allocation once."],
   [['stable', 'rwa'], 'Mint or redeem $10 of the asset once.'],
+  [['basis'], 'Check the funding rate and top up $10 if the vault is below its target.'],
+  [['insurance'], 'Check the policy is live, and renew it if it lapses within 7 days.'],
+  [['index'], 'Check the index rebalance and hold through it.'],
+  [['payment'], 'Make one more payment through the app, at least $10.'],
+  [['governance'], 'Vote on any new proposal, or delegate the vote.'],
+  [['card'], 'Spend at least $10 on the card this week.'],
+  [['liquidity manager'], 'Check the managed range is still in range; leave it alone if it is.'],
+  [['btc'], 'Check the BTC peg and hold; unwrap $10 once a month to test redemption.'],
+  [['cedefi'], 'Check the account statement and withdraw $10 once to test the exit.'],
+  [['chain'], 'Use one app on the chain and keep a gas balance.'],
 ];
 
 function weeklyFor(p: Protocol): string {
@@ -422,21 +432,84 @@ function weeklyFor(p: Protocol): string {
   return 'Make one qualifying action: a deposit, a swap, a vote or a claim.';
 }
 
+/** Gas to keep aside for a farm's setup, by chain: mainnet is dear, Solana is near-free. */
+function gasBufferFor(chain: string): number {
+  if (chain === 'Ethereum') return 25;
+  if (chain === 'Solana') return 1;
+  return 10;
+}
+
 /**
- * A protocol's farm plan: six steps, each an action with a cost and a time. Everything is derived
- * from the protocol's own record (category, chains, TVL, age), never from a hand-written list.
+ * The category's main risk, as a data table, not a list of names: the first keyword that matches
+ * the category decides what can go wrong. The stable-asset risk is priced on the position's size.
+ */
+type Risk = (capital: number) => string;
+
+const RISKS: [string[], Risk][] = [
+  [['lend', 'cdp', 'collateral'], () => 'a falling market can liquidate a borrow; keep the loan under 50% of the deposit'],
+  [['dex'], () => 'impermanent loss if the pair moves sharply: a 2x move costs about 6% of the position'],
+  [['yield', 'farm'], () => "vault yields fall as deposits rise, and a vault's strategy can change without notice"],
+  [['bridge'], () => 'a bridge holds your funds in transit: a bridge exploit can strand them'],
+  [['staking', 'restak'], () => 'unstaking takes days, so the position cannot exit in a crash'],
+  [['perpetual', 'derivative'], () => 'leverage cuts both ways: a 5% move against a 10x position liquidates it'],
+  [['prediction'], () => 'a market can resolve against you and the stake is lost'],
+  [['curator', 'allocator'], () => "the curator's allocation can change, and a bad allocation loses principal"],
+  [['stable'], (c) => `a stable asset can depeg: a 2% depeg costs about $${Math.max(1, Math.round(c * 0.02))} on this position`],
+  [['rwa'], () => 'tokenised real-world assets can freeze redemptions; read the redemption terms first'],
+  [['insurance'], () => 'cover pays only on the stated event; read what the policy excludes'],
+  [['basis'], () => 'a basis trade loses if funding flips negative for a long stretch'],
+  [['launchpad'], () => 'an allocation is not guaranteed, and a launch can fall below its sale price'],
+  [['liquidity manager'], () => 'a managed range can drift out of range and stop earning fees'],
+  [['index'], () => 'an index falls with its whole basket; there is no single asset to exit'],
+  [['payment'], () => 'a payment rail can freeze funds; keep the balance small'],
+  [['nft'], () => 'an NFT can be illiquid; a listing may not sell at all'],
+  [['locker'], () => 'locked tokens cannot be sold until the unlock date'],
+  [['governance'], () => 'a vote locks the deposit until the proposal closes'],
+  [['ai agent', 'decentralized ai'], () => 'an agent can spend its budget on a failed task; cap the spend per task'],
+  [['privacy'], () => 'losing the shielding note loses the funds; there is no recovery'],
+  [['option'], () => 'an option can expire worthless; the premium is the maximum loss'],
+  [['synthetic'], () => 'a synthetic asset liquidates if its collateral ratio falls below the minimum'],
+  [['interest rate'], () => 'a fixed rate locks the deposit until the term ends'],
+  [['reserve currency'], () => 'a bond vests over time; exiting early forfeits part of it'],
+  [['btc'], () => 'a BTC wrapper can depeg from BTC; check the peg every week'],
+  [['cedefi'], () => 'a managed account is custodial; a withdrawal freeze strands the funds'],
+  [['card'], () => 'card funds sit with the issuer; a frozen card strands the balance'],
+  [['otc'], () => 'an OTC order can fail to settle; use escrow where the desk offers it'],
+  [['dor'], () => "a rate vault's yield can fall to zero if rates move"],
+  [['wrapper'], () => 'a wrapped asset depends on its custodian; check the backing every week'],
+  [['chain'], () => 'a new chain can halt; keep a gas balance on a second chain'],
+];
+
+/** The category's main risk: the first table row whose keyword the category carries, else the default. */
+function riskFor(p: Protocol, capital: number): string {
+  const c = (p.category ?? '').toLowerCase();
+  for (const [keywords, fn] of RISKS) {
+    if (keywords.some((k) => c.includes(k))) return fn(capital);
+  }
+  return 'smart contracts can fail; never farm with money you cannot afford to lose';
+}
+
+/**
+ * A protocol's farm plan: six steps, each an action with a cost and a time, ending with the
+ * category's main risk. Everything is derived from the protocol's own record (category, chains,
+ * TVL, age), never from a hand-written list: the wallet is funded with the capital plus a gas
+ * buffer, the hold carries two check-in days, and the risk names what can go wrong for this kind
+ * of protocol.
  */
 export function farmPlan(p: Protocol, age: number | null): FarmStep[] {
   const chain = chainOf(p);
   const capital = capitalFor(p);
   const hold = holdDaysFor(age);
   const gas = gasFor(chain);
+  const buffer = gasBufferFor(chain);
   const secondChain = p.chains.length > 1 ? p.chains[1]! : null;
+  const check1 = Math.max(1, Math.floor(hold / 3));
+  const check2 = Math.max(check1 + 1, Math.floor((2 * hold) / 3));
   return [
     {
-      text: 'Use a fresh wallet that holds only the funds you plan to farm, and keep its seed phrase offline.',
-      cost: 'under $3 of gas for the first transaction',
-      time: '5 minutes',
+      text: `Create a fresh wallet for this farm only, fund it with $${capital + buffer} in total ($${capital} of capital plus about $${buffer} for gas), and store its seed phrase offline.`,
+      cost: `$${capital + buffer} to fund the wallet`,
+      time: '15 minutes',
     },
     {
       text: actionFor(p, capital, chain),
@@ -449,23 +522,23 @@ export function farmPlan(p: Protocol, age: number | null): FarmStep[] {
       time: '10 minutes a week',
     },
     {
-      text: `Hold the position for at least ${hold} days so the activity is counted in more than one snapshot.`,
+      text: `Hold the position for at least ${hold} days so the activity is counted in more than one snapshot. Check in on day ${check1} and day ${check2}: confirm the position is still open and the protocol's TVL has not fallen 30%.`,
       cost: `the $${capital} stays in the position`,
       time: `${hold} days`,
     },
     secondChain === null
       ? {
-          text: `Deepen the position after two weeks: add $50 more on ${chain} and log the new entry.`,
+          text: `Deepen the position after two weeks: add $50 more on ${chain} and log the new entry with its date and transaction hash.`,
           cost: '$50 of capital and ' + gas.once,
           time: '10 minutes',
         }
       : {
-          text: `Open the same position on ${secondChain} with $${Math.max(25, Math.floor(capital / 2))} so the activity spans two chains.`,
+          text: `Open the same position on ${secondChain} with $${Math.max(25, Math.floor(capital / 2))} so the activity spans two chains, and bridge the funds in one transaction.`,
           cost: `$${Math.max(25, Math.floor(capital / 2))} of capital and about $3 of gas`,
           time: '15 minutes',
         },
     {
-      text: `Each week, open ${p.name}'s own points or rewards page and claim only from the link it publishes; if its TVL falls 30% in a week, unwind the position. Write every transaction in a farm log.`,
+      text: `Risk: ${riskFor(p, capital)}. Each week, open ${p.name}'s own points or rewards page and claim only from the link it publishes; if its TVL falls 30% in a week, unwind the position. Write every transaction in a farm log.`,
       cost: 'no fee to check, and never pay to claim',
       time: '10 minutes a week',
     },

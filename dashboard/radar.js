@@ -92,38 +92,38 @@
   }
 
   var ACTIONS = [
-    [['lend', 'cdp', 'collateral'], function (n, c, ch) { return 'Lend $' + c + ' of USDC on ' + n + ' on ' + ch + ' and leave the deposit earning.'; }],
-    [['dex'], function (n, c, ch) { return "Add $" + c + " of liquidity to " + n + "'s deepest pool on " + ch + ' and leave it in place.'; }],
-    [['yield', 'farm'], function (n, c, ch) { return 'Deposit $' + c + " into " + n + "'s highest-TVL vault on " + ch + ' and hold the receipt tokens.'; }],
-    [['bridge'], function (n, c, ch) { return 'Bridge $' + c + ' of USDC through ' + n + ' onto ' + ch + ' and use the funds in its app.'; }],
-    [['staking', 'restak'], function (n, c, ch) { return 'Stake $' + c + ' of the native asset through ' + n + ' on ' + ch + ' and keep the receipt token.'; }],
-    [['perpetual', 'derivative'], function (n, c, ch) { return 'Post $' + c + ' of USDC as margin on ' + n + ' and open one small hedged position.'; }],
-    [['prediction'], function (n, c, ch) { return 'Fund ' + n + ' with $' + c + ' and take one small position in an open market.'; }],
-    [['curator', 'allocator'], function (n, c, ch) { return 'Deposit $' + c + ' into a ' + n + ' curator vault on ' + ch + ' and hold the shares.'; }],
-    [['stable', 'algo-stables', 'dual-token'], function (n, c, ch) { return 'Mint or hold $' + c + " of " + n + "'s stable asset on " + ch + '.'; }],
-    [['rwa'], function (n, c, ch) { return 'Mint $' + c + " of " + n + "'s tokenised asset on " + ch + ' and hold it.'; }],
-    [['insurance'], function (n, c, ch) { return 'Buy $' + c + ' of cover from ' + n + ' on ' + ch + ' and keep the policy live.'; }],
-    [['basis'], function (n, c, ch) { return 'Deposit $' + c + " into " + n + "'s basis vault on " + ch + ' and hold the position.'; }],
-    [['launchpad'], function (n, c, ch) { return 'Stake or hold $' + c + ' through ' + n + ' to qualify for its next launch allocation.'; }],
-    [['liquidity manager'], function (n, c, ch) { return 'Deposit $' + c + ' into a ' + n + '-managed pool on ' + ch + ' and leave it managed.'; }],
-    [['index'], function (n, c, ch) { return 'Buy $' + c + " of " + n + "'s index token on " + ch + ' and hold it.'; }],
-    [['payment'], function (n, c, ch) { return 'Route $' + c + ' of payments through ' + n + ' on ' + ch + ' across the month.'; }],
-    [['nft'], function (n, c, ch) { return 'List or buy one item on ' + n + ' with $' + c + ' of funds on ' + ch + '.'; }],
-    [['locker'], function (n, c, ch) { return 'Lock $' + c + ' of tokens through ' + n + ' on ' + ch + ' for the stated term.'; }],
-    [['governance'], function (n, c, ch) { return 'Deposit $' + c + " and vote once on " + n + "'s current proposal."; }],
-    [['ai agent', 'decentralized ai'], function (n, c, ch) { return 'Fund ' + n + ' with $' + c + ' on ' + ch + ' and run one agent task.'; }],
-    [['privacy'], function (n, c, ch) { return 'Shield $' + c + ' through ' + n + ' on ' + ch + ' and keep the note safe.'; }],
-    [['option'], function (n, c, ch) { return 'Buy one ' + n + ' option with $' + c + ' of premium on ' + ch + '.'; }],
-    [['synthetic'], function (n, c, ch) { return 'Mint $' + c + " of " + n + "'s synthetic asset on " + ch + ' and hold it.'; }],
-    [['interest rate'], function (n, c, ch) { return 'Deposit $' + c + " into " + n + "'s rate market on " + ch + '.'; }],
-    [['reserve currency'], function (n, c, ch) { return 'Bond $' + c + ' through ' + n + ' on ' + ch + ' and hold the receipt.'; }],
-    [['btc'], function (n, c, ch) { return 'Deposit $' + c + ' of BTC exposure through ' + n + ' on ' + ch + '.'; }],
-    [['cedefi'], function (n, c, ch) { return 'Deposit $' + c + " into " + n + "'s managed account on " + ch + '.'; }],
-    [['card'], function (n, c, ch) { return 'Load $' + c + ' onto a ' + n + ' card and spend it through the month.'; }],
-    [['otc'], function (n, c, ch) { return 'Place one $' + c + " order on " + n + "'s OTC desk on " + ch + '.'; }],
-    [['dor'], function (n, c, ch) { return 'Deposit $' + c + " into " + n + "'s rate vault on " + ch + '.'; }],
-    [['wrapper'], function (n, c, ch) { return 'Wrap $' + c + ' through ' + n + ' on ' + ch + ' and hold the wrapped asset.'; }],
-    [['chain'], function (n, c, ch) { return 'Bridge $' + c + " to " + n + "'s chain and use one of its apps."; }]
+    [['lend', 'cdp', 'collateral'], function (n, c, ch) { return 'Supply $' + c + ' of USDC on ' + n + ' on ' + ch + ', then borrow $' + Math.floor(c / 2) + ' of USDC against it at under 50% loan-to-value and leave both legs open.'; }],
+    [['dex'], function (n, c, ch) { return "Add $" + c + " of liquidity to " + n + "'s deepest pool on " + ch + ' in a 50/50 pair, then swap $10 through the pool once to register activity.'; }],
+    [['yield', 'farm'], function (n, c, ch) { return 'Deposit $' + c + " into " + n + "'s highest-TVL vault on " + ch + ", hold the receipt tokens, and note the vault's deposit fee."; }],
+    [['bridge'], function (n, c, ch) { return 'Bridge $' + c + ' of USDC through ' + n + ' onto ' + ch + ', then use half of it in one app on ' + ch + '.'; }],
+    [['staking', 'restak'], function (n, c, ch) { return 'Stake $' + c + ' of the native asset through ' + n + ' on ' + ch + ', keep the receipt token, and delegate to an active validator.'; }],
+    [['perpetual', 'derivative'], function (n, c, ch) { return 'Post $' + c + ' of USDC as margin on ' + n + ', open one small long and one small short to stay delta-neutral, and set a stop at 5%.'; }],
+    [['prediction'], function (n, c, ch) { return 'Fund ' + n + ' with $' + c + ' and take one small position in an open market, sized under 10% of the deposit.'; }],
+    [['curator', 'allocator'], function (n, c, ch) { return 'Deposit $' + c + ' into a ' + n + ' curator vault on ' + ch + ", hold the shares, and check the curator's allocation each week."; }],
+    [['stable', 'algo-stables', 'dual-token'], function (n, c, ch) { return 'Mint or hold $' + c + " of " + n + "'s stable asset on " + ch + ' and supply half of it to its savings pool.'; }],
+    [['rwa'], function (n, c, ch) { return 'Mint $' + c + " of " + n + "'s tokenised asset on " + ch + ", hold it, and read the asset's redemption terms first."; }],
+    [['insurance'], function (n, c, ch) { return 'Buy $' + c + ' of cover from ' + n + ' on ' + ch + ' for a 30-day term and keep the policy live.'; }],
+    [['basis'], function (n, c, ch) { return 'Deposit $' + c + " into " + n + "'s basis vault on " + ch + ' and hold the position through one full funding cycle.'; }],
+    [['launchpad'], function (n, c, ch) { return 'Stake or hold $' + c + ' through ' + n + ' to qualify for its next launch allocation and register for the next sale.'; }],
+    [['liquidity manager'], function (n, c, ch) { return 'Deposit $' + c + ' into a ' + n + '-managed pool on ' + ch + ' and leave the range managed for the full hold.'; }],
+    [['index'], function (n, c, ch) { return 'Buy $' + c + " of " + n + "'s index token on " + ch + ", hold it, and note the index's next rebalance date."; }],
+    [['payment'], function (n, c, ch) { return 'Route $' + c + ' of payments through ' + n + ' on ' + ch + ' across the month in at least four separate payments.'; }],
+    [['nft'], function (n, c, ch) { return 'List or buy one item on ' + n + ' with $' + c + ' of funds on ' + ch + ' and complete one sale or purchase.'; }],
+    [['locker'], function (n, c, ch) { return 'Lock $' + c + ' of tokens through ' + n + ' on ' + ch + ' for the stated term and note the unlock date.'; }],
+    [['governance'], function (n, c, ch) { return 'Deposit $' + c + " and vote once on " + n + "'s current proposal, then delegate the remainder."; }],
+    [['ai agent', 'decentralized ai'], function (n, c, ch) { return 'Fund ' + n + ' with $' + c + ' on ' + ch + ', run one agent task, and keep the task receipt.'; }],
+    [['privacy'], function (n, c, ch) { return 'Shield $' + c + ' through ' + n + ' on ' + ch + ', keep the note safe, and unshield $10 once to prove the flow works.'; }],
+    [['option'], function (n, c, ch) { return 'Buy one ' + n + ' option with $' + c + ' of premium on ' + ch + ' and hold it to expiry or a 2x move.'; }],
+    [['synthetic'], function (n, c, ch) { return 'Mint $' + c + " of " + n + "'s synthetic asset on " + ch + ' at 150% collateral and hold it.'; }],
+    [['interest rate'], function (n, c, ch) { return 'Deposit $' + c + " into " + n + "'s rate market on " + ch + ' and fix the rate for one term.'; }],
+    [['reserve currency'], function (n, c, ch) { return 'Bond $' + c + ' through ' + n + ' on ' + ch + ' and hold the receipt to vesting.'; }],
+    [['btc'], function (n, c, ch) { return 'Deposit $' + c + ' of BTC exposure through ' + n + ' on ' + ch + ' and hold the receipt token.'; }],
+    [['cedefi'], function (n, c, ch) { return 'Deposit $' + c + " into " + n + "'s managed account on " + ch + ' and read its withdrawal terms first.'; }],
+    [['card'], function (n, c, ch) { return 'Load $' + c + ' onto a ' + n + ' card and spend it in at least four purchases through the month.'; }],
+    [['otc'], function (n, c, ch) { return 'Place one $' + c + " order on " + n + "'s OTC desk on " + ch + ' and settle it in full.'; }],
+    [['dor'], function (n, c, ch) { return 'Deposit $' + c + " into " + n + "'s rate vault on " + ch + ' and hold for one rate period.'; }],
+    [['wrapper'], function (n, c, ch) { return 'Wrap $' + c + ' through ' + n + ' on ' + ch + ', hold the wrapped asset, and unwrap $10 once to test redemption.'; }],
+    [['chain'], function (n, c, ch) { return 'Bridge $' + c + " to " + n + "'s chain, use one of its apps, and leave a small balance for gas."; }]
   ];
   function actionFor(p, capital, chain) {
     var c = (p.category || '').toLowerCase();
@@ -137,15 +137,25 @@
   }
 
   var WEEKLY = [
-    [['lend', 'cdp', 'collateral'], 'Borrow $20 against the deposit and repay it the same week.'],
-    [['dex'], 'Swap $10 through the pool once.'],
+    [['lend', 'cdp', 'collateral'], 'Borrow $20 against the deposit and repay it the same week; keep the loan under 50% of the deposit.'],
+    [['dex'], 'Swap $10 through the pool once and add $5 of liquidity.'],
     [['yield', 'farm'], "Harvest and re-deposit the week's yield once."],
     [['bridge'], 'Bridge $10 back or to a second chain once.'],
-    [['staking', 'restak'], "Claim the week's staking rewards once."],
-    [['perpetual', 'derivative'], 'Close and reopen the hedge once.'],
-    [['prediction'], 'Take one new small market position.'],
+    [['staking', 'restak'], "Claim the week's staking rewards once and restake half."],
+    [['perpetual', 'derivative'], 'Close and reopen the hedge once; keep the position delta-neutral.'],
+    [['prediction'], 'Take one new small market position, under $10.'],
     [['curator', 'allocator'], "Rebalance into the vault's newest allocation once."],
-    [['stable', 'rwa'], 'Mint or redeem $10 of the asset once.']
+    [['stable', 'rwa'], 'Mint or redeem $10 of the asset once.'],
+    [['basis'], 'Check the funding rate and top up $10 if the vault is below its target.'],
+    [['insurance'], 'Check the policy is live, and renew it if it lapses within 7 days.'],
+    [['index'], 'Check the index rebalance and hold through it.'],
+    [['payment'], 'Make one more payment through the app, at least $10.'],
+    [['governance'], 'Vote on any new proposal, or delegate the vote.'],
+    [['card'], 'Spend at least $10 on the card this week.'],
+    [['liquidity manager'], 'Check the managed range is still in range; leave it alone if it is.'],
+    [['btc'], 'Check the BTC peg and hold; unwrap $10 once a month to test redemption.'],
+    [['cedefi'], 'Check the account statement and withdraw $10 once to test the exit.'],
+    [['chain'], 'Use one app on the chain and keep a gas balance.']
   ];
   function weeklyFor(p) {
     var c = (p.category || '').toLowerCase();
@@ -156,6 +166,57 @@
       }
     }
     return 'Make one qualifying action: a deposit, a swap, a vote or a claim.';
+  }
+
+  function gasBufferFor(chain) {
+    if (chain === 'Ethereum') return 25;
+    if (chain === 'Solana') return 1;
+    return 10;
+  }
+
+  var RISKS = [
+    [['lend', 'cdp', 'collateral'], function () { return 'a falling market can liquidate a borrow; keep the loan under 50% of the deposit'; }],
+    [['dex'], function () { return 'impermanent loss if the pair moves sharply: a 2x move costs about 6% of the position'; }],
+    [['yield', 'farm'], function () { return "vault yields fall as deposits rise, and a vault's strategy can change without notice"; }],
+    [['bridge'], function () { return 'a bridge holds your funds in transit: a bridge exploit can strand them'; }],
+    [['staking', 'restak'], function () { return 'unstaking takes days, so the position cannot exit in a crash'; }],
+    [['perpetual', 'derivative'], function () { return 'leverage cuts both ways: a 5% move against a 10x position liquidates it'; }],
+    [['prediction'], function () { return 'a market can resolve against you and the stake is lost'; }],
+    [['curator', 'allocator'], function () { return "the curator's allocation can change, and a bad allocation loses principal"; }],
+    [['stable'], function (c) { return 'a stable asset can depeg: a 2% depeg costs about $' + Math.max(1, Math.round(c * 0.02)) + ' on this position'; }],
+    [['rwa'], function () { return 'tokenised real-world assets can freeze redemptions; read the redemption terms first'; }],
+    [['insurance'], function () { return 'cover pays only on the stated event; read what the policy excludes'; }],
+    [['basis'], function () { return 'a basis trade loses if funding flips negative for a long stretch'; }],
+    [['launchpad'], function () { return 'an allocation is not guaranteed, and a launch can fall below its sale price'; }],
+    [['liquidity manager'], function () { return 'a managed range can drift out of range and stop earning fees'; }],
+    [['index'], function () { return 'an index falls with its whole basket; there is no single asset to exit'; }],
+    [['payment'], function () { return 'a payment rail can freeze funds; keep the balance small'; }],
+    [['nft'], function () { return 'an NFT can be illiquid; a listing may not sell at all'; }],
+    [['locker'], function () { return 'locked tokens cannot be sold until the unlock date'; }],
+    [['governance'], function () { return 'a vote locks the deposit until the proposal closes'; }],
+    [['ai agent', 'decentralized ai'], function () { return 'an agent can spend its budget on a failed task; cap the spend per task'; }],
+    [['privacy'], function () { return 'losing the shielding note loses the funds; there is no recovery'; }],
+    [['option'], function () { return 'an option can expire worthless; the premium is the maximum loss'; }],
+    [['synthetic'], function () { return 'a synthetic asset liquidates if its collateral ratio falls below the minimum'; }],
+    [['interest rate'], function () { return 'a fixed rate locks the deposit until the term ends'; }],
+    [['reserve currency'], function () { return 'a bond vests over time; exiting early forfeits part of it'; }],
+    [['btc'], function () { return 'a BTC wrapper can depeg from BTC; check the peg every week'; }],
+    [['cedefi'], function () { return 'a managed account is custodial; a withdrawal freeze strands the funds'; }],
+    [['card'], function () { return 'card funds sit with the issuer; a frozen card strands the balance'; }],
+    [['otc'], function () { return 'an OTC order can fail to settle; use escrow where the desk offers it'; }],
+    [['dor'], function () { return "a rate vault's yield can fall to zero if rates move"; }],
+    [['wrapper'], function () { return 'a wrapped asset depends on its custodian; check the backing every week'; }],
+    [['chain'], function () { return 'a new chain can halt; keep a gas balance on a second chain'; }]
+  ];
+  function riskFor(p, capital) {
+    var c = (p.category || '').toLowerCase();
+    for (var i = 0; i < RISKS.length; i++) {
+      var keywords = RISKS[i][0];
+      for (var j = 0; j < keywords.length; j++) {
+        if (c.indexOf(keywords[j]) >= 0) return RISKS[i][1](capital);
+      }
+    }
+    return 'smart contracts can fail; never farm with money you cannot afford to lose';
   }
 
   function stepText(step) {
@@ -170,17 +231,20 @@
     var capital = capitalFor(p);
     var hold = holdDaysFor(p.age_days);
     var gas = gasFor(chain);
+    var buffer = gasBufferFor(chain);
     var secondChain = p.chains && p.chains.length > 1 ? p.chains[1] : null;
+    var check1 = Math.max(1, Math.floor(hold / 3));
+    var check2 = Math.max(check1 + 1, Math.floor((2 * hold) / 3));
     var second = secondChain === null
-      ? { text: 'Deepen the position after two weeks: add $50 more on ' + chain + ' and log the new entry.', cost: '$50 of capital and ' + gas.once, time: '10 minutes' }
-      : { text: 'Open the same position on ' + secondChain + ' with $' + Math.max(25, Math.floor(capital / 2)) + ' so the activity spans two chains.', cost: '$' + Math.max(25, Math.floor(capital / 2)) + ' of capital and about $3 of gas', time: '15 minutes' };
+      ? { text: 'Deepen the position after two weeks: add $50 more on ' + chain + ' and log the new entry with its date and transaction hash.', cost: '$50 of capital and ' + gas.once, time: '10 minutes' }
+      : { text: 'Open the same position on ' + secondChain + ' with $' + Math.max(25, Math.floor(capital / 2)) + ' so the activity spans two chains, and bridge the funds in one transaction.', cost: '$' + Math.max(25, Math.floor(capital / 2)) + ' of capital and about $3 of gas', time: '15 minutes' };
     return [
-      { text: 'Use a fresh wallet that holds only the funds you plan to farm, and keep its seed phrase offline.', cost: 'under $3 of gas for the first transaction', time: '5 minutes' },
+      { text: 'Create a fresh wallet for this farm only, fund it with $' + (capital + buffer) + ' in total ($' + capital + ' of capital plus about $' + buffer + ' for gas), and store its seed phrase offline.', cost: '$' + (capital + buffer) + ' to fund the wallet', time: '15 minutes' },
       { text: actionFor(p, capital, chain), cost: '$' + capital + ' of capital and ' + gas.once, time: '15 minutes to set up' },
       { text: weeklyFor(p), cost: gas.weekly, time: '10 minutes a week' },
-      { text: 'Hold the position for at least ' + hold + ' days so the activity is counted in more than one snapshot.', cost: 'the $' + capital + ' stays in the position', time: hold + ' days' },
+      { text: 'Hold the position for at least ' + hold + ' days so the activity is counted in more than one snapshot. Check in on day ' + check1 + ' and day ' + check2 + ": confirm the position is still open and the protocol's TVL has not fallen 30%.", cost: 'the $' + capital + ' stays in the position', time: hold + ' days' },
       second,
-      { text: "Each week, open " + p.name + "'s own points or rewards page and claim only from the link it publishes; if its TVL falls 30% in a week, unwind the position. Write every transaction in a farm log.", cost: 'no fee to check, and never pay to claim', time: '10 minutes a week' }
+      { text: 'Risk: ' + riskFor(p, capital) + ". Each week, open " + p.name + "'s own points or rewards page and claim only from the link it publishes; if its TVL falls 30% in a week, unwind the position. Write every transaction in a farm log.", cost: 'no fee to check, and never pay to claim', time: '10 minutes a week' }
     ].map(stepText);
   }
 
@@ -404,7 +468,7 @@
         ),
         el('div', { class: 'model-cell' },
           el('h3', { text: 'Farm plans are derived' }),
-          el('p', null, 'Each plan follows from the row\u2019s own record: the category picks the action, TVL sizes the capital ($50\u2013$250), age sets the hold (30\u201390 days), and the chain sets the gas. Every step states its cost and its time.')
+          el('p', null, 'Each plan follows from the row\u2019s own record: the category picks the action, TVL sizes the capital ($50\u2013$250), age sets the hold (30\u201390 days), and the chain sets the gas. Every step states its cost and its time, and each plan ends with the category\u2019s main risk.')
         )
       ),
       el('p', { class: 'sub', text: 'The early radar is every pre-token protocol below the watchlist floor that the watchlist\u2019s own rule would keep: not a wrapped, staked or bridged product, not an exchange, not a versioned pool. A protocol at or above the floor that the watchlist left out is a product of a token that already trades, so it is never ranked.' })
@@ -419,6 +483,39 @@
   }
 
   // ---------------------------------------------------------------- detail drawer
+
+  /** The watchlist's median TVL, from the rows at or above the floor: the context bar's mark. */
+  function watchlistMedianTvl() {
+    var tvls = DATA.rows.filter(onWatchlist).map(function (r) { return r.tvl_usd; }).sort(function (a, b) { return a - b; });
+    if (tvls.length === 0) return null;
+    return tvls.length % 2 === 1 ? tvls[(tvls.length - 1) / 2] : (tvls[tvls.length / 2 - 1] + tvls[tvls.length / 2]) / 2;
+  }
+
+  function ordinal(n) {
+    var s = ['th', 'st', 'nd', 'rd'];
+    var v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  }
+
+  /** One line on why this row sits at its rank, from its own figures and the board around it. */
+  function whyRank(row) {
+    var tvlRank = DATA.rows.filter(function (r) { return r.tvl_usd > row.tvl_usd; }).length + 1;
+    var parts = [];
+    if (tvlRank === 1) parts.push('the largest TVL on the board');
+    else if (tvlRank <= 3) parts.push('the ' + ordinal(tvlRank) + ' largest TVL on the board');
+    else if (tvlRank <= 10) parts.push('a top-10 TVL on the board');
+    else if (onWatchlist(row)) parts.push('TVL above the watchlist floor');
+    else parts.push('TVL below the watchlist floor');
+    if (row.change_7d !== null && row.change_7d !== undefined) {
+      if (row.change_7d >= 20) parts.push('7-day growth of ' + fmtPct(row.change_7d));
+      else if (row.change_7d <= -20) parts.push('a 7-day fall of ' + fmtPct(row.change_7d));
+    }
+    if (row.age_days !== null && row.age_days !== undefined) {
+      if (row.age_days >= 1095) parts.push('three years tokenless');
+      else if (row.age_days < 180) parts.push('listed only ' + fmtAge(row.age_days) + ' ago');
+    } else parts.push('an unknown listing age');
+    return 'Why rank ' + row.rank + ': ' + parts.join(', ') + '.';
+  }
 
   var dialog = el('dialog', { class: 'detail', id: 'detail', 'aria-labelledby': 'detail-title' });
   dialog.addEventListener('close', function () { state.selected = null; writeHash(); });
@@ -439,6 +536,7 @@
       ),
       el('button', { class: 'close', type: 'button', 'aria-label': 'Close details', text: 'Close', onclick: function () { dialog.close(); } })
     ));
+    dialog.appendChild(el('p', { class: 'why', text: whyRank(row) }));
     dialog.appendChild(el('section', { class: 'detail-section' },
       el('h3', { text: 'Implied value' }),
       el('div', { class: 'equation' },
@@ -451,6 +549,24 @@
         el('div', { class: 'total' }, el('span', { text: 'Implied value' }), el('b', { class: 'num', text: fmtUsd(row.implied_value_usd) }))
       ),
       el('p', { class: 'note', text: 'Model ' + DATA.model_version + ': this page recomputes the row as ' + fmtUsd(recomputed) + (recomputed === row.implied_value_usd ? ', the same number the board carries.' : ', which differs from the board: the data would be stale.') + ' An estimate, not a price.' })
+    ));
+    var median = watchlistMedianTvl();
+    var minTvl = Infinity;
+    var maxTvl = 0;
+    DATA.rows.forEach(function (r) { if (r.tvl_usd < minTvl) minTvl = r.tvl_usd; if (r.tvl_usd > maxTvl) maxTvl = r.tvl_usd; });
+    var logMin = Math.log10(minTvl);
+    var logMax = Math.log10(maxTvl);
+    var logPos = function (v) { return Math.max(0, Math.min(100, ((Math.log10(v) - logMin) / (logMax - logMin)) * 100)); };
+    var ratio = median === null ? null : row.tvl_usd / median;
+    dialog.appendChild(el('section', { class: 'detail-section' },
+      el('h3', { text: 'TVL in context' }),
+      el('div', { class: 'tvl-track', 'aria-hidden': 'true' },
+        el('i', { class: 'tvl-fill', style: 'width:' + logPos(row.tvl_usd).toFixed(1) + '%' }),
+        median === null ? null : el('i', { class: 'tvl-median', style: 'left:' + logPos(median).toFixed(1) + '%' })
+      ),
+      el('p', { class: 'note', text: median === null
+        ? fmtUsd(row.tvl_usd) + ' of TVL. The green bar is this protocol, on a log scale from the smallest to the largest TVL on the board.'
+        : fmtUsd(row.tvl_usd) + ' of TVL — ' + (ratio >= 1 ? ratio.toFixed(1) : ratio.toFixed(2)) + 'x the watchlist median (' + fmtUsd(median) + '). The green bar is this protocol and the amber line is the median, on a log scale from the smallest to the largest TVL on the board.' })
     ));
     dialog.appendChild(el('section', { class: 'detail-section' },
       el('h3', { text: 'Farm plan' }),

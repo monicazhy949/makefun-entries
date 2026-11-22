@@ -152,6 +152,13 @@ caption { caption-side: bottom; text-align: left; padding: var(--s3) var(--s4); 
 .detail .sub { margin-top: var(--s1); }
 .detail-section { margin-top: var(--s5); padding-top: var(--s4); border-top: 1px solid var(--border); }
 .detail-section h3 { margin-bottom: var(--s2); }
+.why {
+  margin-top: var(--s4); padding: var(--s3) var(--s4); background: var(--accent-dim);
+  border: 1px solid var(--border); border-radius: var(--radius-control); font-size: 13px; line-height: 1.5;
+}
+.tvl-track { position: relative; height: 10px; border-radius: 5px; background: var(--border); margin: var(--s2) 0 var(--s3); }
+.tvl-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 5px; }
+.tvl-median { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--amber); }
 .equation { display: grid; gap: var(--s2); font-family: var(--font-num); font-size: 13px; }
 .equation div { display: flex; justify-content: space-between; gap: var(--s3); }
 .equation span { color: var(--muted); font-family: var(--font-body); }
