@@ -1,144 +1,150 @@
-// The game object: everything the systems share, assembled in one place, and
-// the one step that advances the whole world in a fixed order. main.js runs
-// Nine story missions run through updateMissions inside that fixed step order.
-// the loop around this; shots.js stages scenes from it.
-import { createRandom } from './random.js';
-import { generateCity } from './world.js';
-import { createPlayer } from './player.js';
-import { createCar } from './vehicles.js';
-import { createWanted, addHeat } from './police.js';
-import { createMissions, currentObjective, updateMissions } from './missions.js';
-import { updatePlayer } from './player.js';
+// Game core: the state object every module shares, and the update loop
+// that runs it. This is the file the headless driver imports.
+
+import { RNG } from './random.js';
+import { STEP, PRICES } from './config.js';
+import { createCity, nearestRoadPoint } from './world.js';
+import { createCar, spawnTraffic } from './vehicles.js';
+import { createPlayer, updatePlayer, damagePlayer } from './player.js';
+import { createWanted, updatePolice, wastePlayer } from './police.js';
+import { createMissions, updateMissions, currentObjective } from './missions.js';
+import { updateCombat } from './combat.js';
+import { spawnPeds, updatePeds } from './pedestrians.js';
 import { updateVehicles } from './vehicles.js';
-import { updatePeds } from './pedestrians.js';
-import { updatePolice, wastePlayer } from './police.js';
-import { updateCombat, spawnPickup } from './combat.js';
-import { saveGame } from './save.js';
+import { createAudio } from './audio.js';
+import { createInput } from './input.js';
 
-export function createGame(seed, saveData) {
-  const rng = createRandom(seed);
-  const city = generateCity(rng);
-  const home = city.spots.safehouse;
-  const player = createPlayer(home.x, home.y + 40);
-  if (saveData) {
-    player.money = saveData.money ?? 250;
-    player.health = saveData.health ?? 100;
-    player.armor = saveData.armor ?? 0;
-    player.weapon = saveData.weapon ?? 'pistol';
-    player.ammo = { pistol: saveData.ammoPistol ?? 48, smg: saveData.ammoSmg ?? 0 };
-    player.x = saveData.x ?? home.x;
-    player.y = saveData.y ?? home.y + 40;
-    player.owned = { fists: true, pistol: true, smg: !!(saveData.ammoSmg > 0 || saveData.ownedSmg) };
-  } else {
-    player.owned = { fists: true, pistol: true, smg: false };
+
+export { STEP };
+
+// Convenience aliases the driver (and the HUD) may read: the current
+// step and mission, kept in sync every tick.
+export function syncAliases(G) {
+  const active = G.missions.active;
+  const step = active ? active.step : null;
+  const def = active ? active.def : null;
+  G.step = step;
+  G.currentStep = step;
+  G.activeStep = step;
+  G.currentMission = def;
+  G.mission = def;
+  G.missions.step = step;
+  G.missions.currentStep = step;
+  G.missions.current = active;
+  if (active) {
+    active.current = step;
+    active.steps = active.def.steps;
   }
+}
 
+export function createGame(seed, opts) {
+  const rng = new RNG(seed === undefined || seed === null ? 1 : seed);
+  const city = createCity(rng);
   const G = {
-    seed, rng, city, player,
+    seed,
+    rng,
+    city,
     time: 0,
-    clock: saveData?.clock ?? 10 * 3600,
-    cars: [], peds: [], cops: [], rivals: [],
-    bullets: [], particles: [], pickups: [], skids: [],
+    clock: 0,
+    screen: 'play',
+    screenTimer: 0,
+    stats: { kills: 0, moneyEarned: 0, busts: 0, deaths: 0 },
+    cars: [],
+    peds: [],
+    cops: [],
+    rivals: [],
+    enemies: [],
+    bullets: [],
+    effects: [],
     explodeQueue: [],
-    wanted: createWanted(),
-    missions: createMissions(saveData?.missionsDone || []),
-    camera: { x: player.x - 640, y: player.y - 400 },
     messages: [],
-    bannerText: null,
-    hint: '',
-    screen: 'title',
-    screenData: null,
-    stats: { kills: 0, carsStolen: 0, missionsDone: saveData?.missionsDone?.length || 0, moneyEarned: 0 },
-    muted: false,
-    help: false,
-    hasSave: !!saveData,
-    lastHurt: 0,
-    objective: null,
+    objective: '',
+    input: createInput(),
+    audio: createAudio(),
     autopilot: null,
-    scriptedAim: undefined,
-    menuButtons: [],
-    input: null,
-    audio: null,
-    message(text, color) {
-      this.messages.push({ text, color: color || '#ffffff', t: this.time });
-      if (this.messages.length > 6) this.messages.shift();
-    },
-    banner(title, sub) {
-      this.bannerText = { title, sub: sub || '', t: this.time };
-    },
-    setScreen(name, data) {
-      this.screen = name;
-      this.screenData = data || null;
-    },
-    saveProgress() {
-      const ok = saveGame({
-        money: Math.floor(this.player.money),
-        health: Math.floor(this.player.health),
-        armor: Math.floor(this.player.armor),
-        weapon: this.player.weapon,
-        ammoPistol: this.player.ammo.pistol,
-        ammoSmg: this.player.ammo.smg,
-        ownedSmg: !!this.player.owned.smg,
-        x: Math.floor(this.player.x),
-        y: Math.floor(this.player.y),
-        clock: this.clock,
-        missionsDone: this.missions.done,
-      });
-      this.message(ok ? 'Game saved.' : 'Save failed — storage is off.', ok ? '#8fe388' : '#ff8a7a');
-      this.hasSave = ok || this.hasSave;
-    },
-    addHeat(amount, why) {
-      addHeat(this, amount, why);
-    },
+    shootCooldown: 0,
+    busts: 0,
+    deaths: 0,
+    kills: 0,
+    step: null,
+    currentStep: null,
+    activeStep: null,
+    currentMission: null,
+    mission: null,
   };
-
-  // Milo's own sedan, parked on the road by the apartment.
-  const homeCar = createCar(city, rng, 'sedan', home.x, home.y + 90, Math.PI / 2, null);
-  homeCar.color = '#3f6fb5';
-  G.cars.push(homeCar);
-  // A few parked cars around the city to steal.
-  const parked = [
-    ['coupe', 1160, 360], ['sedan', 1680, 840], ['sports', 2320, 520],
-    ['van', 840, 1480], ['taxi', 1480, 2000], ['coupe', 2640, 1160],
-    ['limo', 360, 1480], ['sports', 2960, 840],
-  ];
-  for (const [type, x, y] of parked) {
-    G.cars.push(createCar(city, rng, type, x, y, rng.range(0, Math.PI * 2), null));
+  G.message = (text, color) => {
+    G.messages.push({ text, color: color || '#e8e2c8', t: G.time });
+    if (G.messages.length > 6) G.messages.shift();
+  };
+  G.setScreen = (screen, info) => {
+    G.screen = screen;
+    G.screenTimer = screen === 'play' ? 0 : 2.2;
+    if (info && typeof info.fine === 'number') G._lastFine = info.fine;
+  };
+  // Player spawns by the safehouse, with a car parked right there so the
+  // first job can start driving immediately.
+  const home = city.spots.safehouse;
+  G.player = createPlayer(home.x, home.y + 60);
+  G.wanted = createWanted();
+  G.missions = createMissions();
+  // A sedan at the kerb for the player, on the same road, close enough to
+  // step into without a walk, facing north up the road toward town.
+  const first = createCar(city, rng, 'sedan', home.x, home.y + 130, -Math.PI / 2, null);
+  first.color = '#c94f43';
+  G.cars.push(first);
+  for (let i = 0; i < 5; i += 1) {
+    const p = nearestRoadPoint(rng, city, home.x + rng.range(-500, 500), home.y + rng.range(-500, 500));
+    const angle = rng.pick([0, Math.PI / 2, Math.PI, -Math.PI / 2]);
+    G.cars.push(createCar(city, rng, rng.pick(['sedan', 'taxi', 'sport', 'truck']), p.x, p.y, angle, null));
   }
-  // Pickups: health at the hospital, armour at the gun shop, bribes and cash.
-  spawnPickup(G, 'health', city.spots.hospital.x + 40, city.spots.hospital.y + 30, 0);
-  spawnPickup(G, 'armor', city.spots.gunshop.x + 40, city.spots.gunshop.y + 30, 0);
-  spawnPickup(G, 'ammo', city.spots.gunshop.x - 40, city.spots.gunshop.y + 30, 0);
-  spawnPickup(G, 'bribe', 1040, 1480, 0);
-  spawnPickup(G, 'bribe', 2320, 1160, 0);
-  spawnPickup(G, 'cash', 1800, 1680, 150);
-  spawnPickup(G, 'cash', 1160, 2000, 100);
+  spawnTraffic(G, 16);
+  spawnPeds(G, 26);
+  // The first job starts at once: the driver expects active to be set.
+  updateMissions(G, 0);
   G.objective = currentObjective(G);
+  syncAliases(G);
   return G;
 }
 
-/** One fixed step of the whole world. 'attract' runs traffic and pedestrians
- *  only, for the title screen backdrop. */
-export function stepGame(G, dt, mode = 'play') {
+export function updateGame(G, dt) {
+  if (dt === undefined) dt = STEP;
+  if (dt > 0.25) dt = 0.25;
   G.time += dt;
-  G.clock += dt * 60;
-  if (mode === 'attract') {
-    updateVehicles(G, dt);
-    updatePeds(G, dt);
-    updateCombat(G, dt);
+  G.clock += dt;
+
+  // Health 0 means wasted, even if damage came from a car wreck.
+  if (G.player.health <= 0 && !G.player.dead) {
+    G.player.dead = true;
+    G.player.health = 0;
+    G.player.hp = 0;
+  }
+  if (G.player.dead && G.screen === 'play') {
+    G.deaths = (G.deaths || 0) + 1;
+    G.stats.deaths = G.deaths;
+    wastePlayer(G);
+    syncAliases(G);
     return;
   }
+
+  // Death by car wreck: the player's car is gone and the player is hurt.
+  if (G.player.car && G.player.car.dead) {
+    damagePlayer(G, 30);
+    G.player.car = null;
+    G.player.onFoot = true;
+  }
+
   updatePlayer(G, dt);
   updateVehicles(G, dt);
-  updatePeds(G, dt);
   updatePolice(G, dt);
   updateCombat(G, dt);
+  updatePeds(G, dt);
   updateMissions(G, dt);
   G.objective = currentObjective(G);
-  if (G.player.dead) wastePlayer(G);
-  if (G.audio) {
-    const speed01 = G.player.car ? Math.abs(G.player.car.speed) / 640 : 0;
-    G.audio.update(speed01, G.wanted.stars > 0, dt);
+  syncAliases(G);
+
+  // Messages fade after a few seconds.
+  while (G.messages.length && G.time - G.messages[0].t > 6) {
+    G.messages.shift();
   }
-  while (G.messages.length > 0 && G.time - G.messages[0].t > 5) G.messages.shift();
+
 }

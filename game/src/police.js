@@ -1,7 +1,7 @@
-// The wanted system and the SBPD: heat rises with crimes, stars follow heat,
-// cop cars chase and ram, foot cops chase and arrest, and the heat only cools
-// when no cop can see the player.
-// Wanted stars gate the evade/lose steps in Heat Wave and Street King alike.
+// Wanted level and the SBPD: heat rises with crimes, stars follow heat,
+// cop cars chase and ram, foot cops chase and arrest, and the heat only
+// cools when no cop can see the player.
+
 import { STAR_HEAT, HEAT_DECAY_HIDDEN, HEAT_DECAY_SEEN, PRICES } from './config.js';
 import { createCar } from './vehicles.js';
 import { resolveCircle, randomRoadPoint } from './world.js';
@@ -19,18 +19,18 @@ export function starsForHeat(heat) {
   return stars;
 }
 
-/** Raise the heat; the star count follows, and the player is told why. */
+// Raise the heat; the star count follows, and the player is told why.
 export function addHeat(G, amount, why) {
   const wanted = G.wanted;
-  const before = wanted.stars;
   wanted.heat = Math.min(100, wanted.heat + amount);
+  const before = wanted.stars;
   wanted.stars = starsForHeat(wanted.heat);
   if (wanted.stars > before && why) {
-    G.message(`${'★'.repeat(wanted.stars)}  Wanted — ${why}`, '#ff8a7a');
+    G.message(`${'★'.repeat(wanted.stars)} Wanted — ${why}`, '#ff8a7a');
   }
 }
 
-/** Is any cop close enough to see the player right now? */
+// Is any cop close enough to see the player right now?
 function playerSeen(G) {
   const px = G.player.x;
   const py = G.player.y;
@@ -78,7 +78,7 @@ function steerCopCar(G, car, dt) {
   let diff = want - car.angle;
   while (diff > Math.PI) diff -= Math.PI * 2;
   while (diff < -Math.PI) diff += Math.PI * 2;
-  car.steer = Math.max(-1, Math.min(1, diff * 2.4));
+  car.steer = Math.max(-1, Math.min(1, -diff * 2.4));
   car.throttle = Math.abs(diff) > 1.4 ? 0.3 : 1;
   car.sirenPhase += dt * 10;
   // A cop car that touches the player's car damages it and slows both down.
@@ -86,12 +86,14 @@ function steerCopCar(G, car, dt) {
     const d = Math.hypot(car.x - player.car.x, car.y - player.car.y);
     if (d < 44) {
       player.car.health -= 14 * dt;
+      player.car.hp = player.car.health;
       if (player.car.health <= 0) {
         player.car.health = 0;
+        player.car.hp = 0;
         player.car.dead = true;
-        // The cops wrecked it: not the player's crime.
         G.explodeQueue.push({ x: player.car.x, y: player.car.y, radius: 90, blame: false });
         player.car = null;
+        player.onFoot = true;
       }
     }
   }
@@ -111,7 +113,7 @@ function updateFootCop(G, cop, dt) {
   while (diff > Math.PI) diff -= Math.PI * 2;
   while (diff < -Math.PI) diff += Math.PI * 2;
   cop.angle += Math.max(-4 * dt, Math.min(4 * dt, diff));
-  const speed = dist > 300 ? 0 : 235; // cops only run when close; they arrive by car
+  const speed = dist > 300 ? 0 : 120; // cops only run when close; they arrive by car
   const nx = cop.x + Math.cos(cop.angle) * speed * dt;
   const ny = cop.y + Math.sin(cop.angle) * speed * dt;
   const fixed = resolveCircle(G.city, nx, ny, 11);
@@ -124,7 +126,7 @@ function updateFootCop(G, cop, dt) {
     if (cop.punchTimer <= 0) {
       cop.punchTimer = 0.9;
       damagePlayer(G, 6);
-      G.audio.punch();
+      if (G.audio) G.audio.punch();
     }
   }
 }
@@ -132,6 +134,8 @@ function updateFootCop(G, cop, dt) {
 export function updatePolice(G, dt) {
   const wanted = G.wanted;
   wanted.flash += dt;
+  // An evade step holds the heat at its floor so the chase can be survived.
+  const step = G.missions && G.missions.active ? G.missions.active.step : null;
   if (wanted.stars === 0) {
     // No heat: the few cops on patrol drift away.
     for (let i = G.cars.length - 1; i >= 0; i -= 1) {
@@ -149,10 +153,16 @@ export function updatePolice(G, dt) {
   wanted.seen = seen ? wanted.seen + dt : 0;
   // Heat cools when hidden, barely when seen.
   wanted.heat = Math.max(0, wanted.heat - (seen ? HEAT_DECAY_SEEN : HEAT_DECAY_HIDDEN) * dt);
+  if (step && step.type === 'evade' && step.stars) {
+    const floor = STAR_HEAT[Math.min(step.stars, STAR_HEAT.length - 1)];
+    if (wanted.heat < floor) wanted.heat = floor;
+  }
   const stars = starsForHeat(wanted.heat);
   if (stars < wanted.stars) {
     wanted.stars = stars;
     if (stars === 0) G.message('You lost the cops.', '#8fe388');
+  } else {
+    wanted.stars = stars;
   }
 
   // Reinforcements scale with stars.
@@ -172,7 +182,7 @@ export function updatePolice(G, dt) {
   for (const cop of G.cops) updateFootCop(G, cop, dt);
 
   // Busted: held by a cop on foot, or boxed in while stopped.
-  if (!G.player.car && wanted.bustTimer > 1.6) {
+  if (!G.player.car && wanted.bustTimer > 4.0) {
     wanted.bustTimer = 0;
     bustPlayer(G);
   } else if (G.player.car && Math.abs(G.player.car.speed) < 12) {
@@ -182,7 +192,7 @@ export function updatePolice(G, dt) {
     }
     if (near >= 2) {
       wanted.bustTimer += dt;
-      if (wanted.bustTimer > 2.2) {
+      if (wanted.bustTimer > 6.0) {
         wanted.bustTimer = 0;
         bustPlayer(G);
       }
@@ -195,13 +205,15 @@ export function updatePolice(G, dt) {
   if (G.player.car) wanted.bustTimer = Math.max(0, wanted.bustTimer - dt * 0.5);
 }
 
-function bustPlayer(G) {
-  const fine = Math.min(G.player.money, 200);
-  G.player.money -= fine;
+export function bustPlayer(G) {
+  const fine = Math.min(G.player.money, PRICES.fine);
+  addMoney(G, -fine);
+  G.player.money = Math.max(0, G.player.money);
   G.wanted.stars = 0;
   G.wanted.heat = 0;
   G.wanted.bustTimer = 0;
   G.player.health = 100;
+  G.player.hp = 100;
   G.player.armor = 0;
   // Drop the player at the police station, on foot.
   const station = G.city.spots.police;
@@ -209,20 +221,23 @@ function bustPlayer(G) {
     G.player.car.driver = null;
     G.player.car = null;
   }
+  G.player.onFoot = true;
   G.player.x = station.x;
   G.player.y = station.y + 60;
   for (let i = G.cars.length - 1; i >= 0; i -= 1) {
     if (G.cars[i].driver === 'police') G.cars.splice(i, 1);
   }
   G.cops.length = 0;
-  G.audio.busted();
+  if (G.audio) G.audio.busted();
   G.setScreen('busted', { fine });
+  G.busts = (G.busts || 0) + 1;
 }
 
-/** Wasted: the player died. Respawn at the hospital, fined, wanted cleared. */
+// Wasted: the player died. Respawn at the hospital, fined, wanted cleared.
 export function wastePlayer(G) {
-  const fine = Math.min(G.player.money, 200);
-  G.player.money -= fine;
+  const fine = Math.min(G.player.money, PRICES.fine);
+  addMoney(G, -fine);
+  G.player.money = Math.max(0, G.player.money);
   G.wanted.stars = 0;
   G.wanted.heat = 0;
   const hospital = G.city.spots.hospital;
@@ -230,19 +245,22 @@ export function wastePlayer(G) {
     G.player.car.driver = null;
     G.player.car = null;
   }
+  G.player.onFoot = true;
   G.player.x = hospital.x;
   G.player.y = hospital.y + 60;
   G.player.health = 100;
+  G.player.hp = 100;
   G.player.armor = 0;
   G.player.dead = false;
   for (let i = G.cars.length - 1; i >= 0; i -= 1) {
     if (G.cars[i].driver === 'police') G.cars.splice(i, 1);
   }
   G.cops.length = 0;
+  if (G.audio) G.audio.busted();
   G.setScreen('wasted', { fine });
 }
 
-/** Spray & Save: pay per star to repaint and clear the wanted level. */
+// Spray & Save: pay per star to repaint and clear the wanted level.
 export function trySprayShop(G) {
   const garage = G.city.spots.garage;
   const d = Math.hypot(G.player.x - garage.x, G.player.y - garage.y);
@@ -256,12 +274,13 @@ export function trySprayShop(G) {
     G.message(`Spray & Save wants $${cost} — you're short.`, '#ff8a7a');
     return true;
   }
-  G.player.money -= cost;
+  addMoney(G, -cost);
   G.wanted.stars = 0;
   G.wanted.heat = 0;
   G.wanted.bustTimer = 0;
   if (G.player.car) {
     G.player.car.health = 100;
+    G.player.car.hp = 100;
     G.player.car.color = G.rng.pick(['#c94f43', '#3f6fb5', '#e8c53a', '#2e2e33', '#7fb069', '#d97b29']);
   }
   for (let i = G.cars.length - 1; i >= 0; i -= 1) {
@@ -269,6 +288,6 @@ export function trySprayShop(G) {
   }
   G.cops.length = 0;
   G.message(`Fresh paint, clean plate. -$${cost}`, '#8fe388');
-  G.audio.jingle();
+  if (G.audio) G.audio.jingle();
   return true;
 }

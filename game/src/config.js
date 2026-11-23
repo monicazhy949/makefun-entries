@@ -1,169 +1,167 @@
-// Solmar Bay — tuning, palette, vehicles, weapons and the story mission list.
-// One place for every number the rest of the game reads, so balancing never means
-// hunting through the systems.
+// Solmar Bay: constants, places and the nine story missions.
+// STEP is the fixed simulation step in seconds (the headless driver
+// advances the game by STEP each tick).
 
-export const STEP = 1 / 60;
-export const WORLD_W = 3200;
-export const WORLD_H = 2400;
-export const ROAD_W = 64;
-export const WALK_W = 16;
-export const SAVE_KEY = 'solmar-save-v1';
+export const STEP = 0.1;
+export const CITY_W = 2880;
+export const CITY_H = 2160;
+export const ROADS = [80, 320, 560, 800, 1040, 1280, 1520, 1760, 2000, 2240, 2480, 2720];
+export const ROAD_HALF = 50;
+export const WALK_SPEED = 170;
+export const CAR_MAX_SPEED = 120;
+export const PLAYER_CAR_HEALTH = 99999; // player-entered cars shrug off rams so a chase cannot strand the driver
+export const CAR_ACCEL = 340;
+export const CAR_BRAKE = 420;
+export const HEAT_PER_KILL = 14;
+export const HEAT_PER_THEFT = 12;
+export const HEAT_BANK_ALARM = 30;
+export const HEAT_DECAY_HIDDEN = 2.2;
+export const HEAT_DECAY_SEEN = 0.6;
+export const PRICES = { fine: 250, sprayPerStar: 150, armor: 200 };
+export const STAR_HEAT = [0, 18, 40, 62, 84];
 
-// Sun-soaked palette: warm sand, pale stucco, terracotta roofs, turquoise water.
-export const PALETTE = {
-  water: '#2f9ec4',
-  waterDeep: '#1f7ea6',
-  sand: '#ecd9a4',
-  ground: '#c9bd9f',
-  grass: '#79b264',
-  grassDark: '#639c50',
-  asphalt: '#3d4149',
-  asphaltDark: '#34383f',
-  lane: '#e8e2c8',
-  walk: '#b9b2a0',
-  walkDark: '#a89f8b',
-  plaza: '#c9bda6',
-  buildingEdge: 'rgba(0,0,0,0.18)',
-  shadow: 'rgba(20,16,8,0.28)',
+// Named places. Every spot sits ON a road (at an intersection or on a
+// road line) so a car can drive right up to it; the pier and the docks
+// sit on the water's edge at the east of the map.
+export const SPOTS = {
+  safehouse: { x: 800, y: 800, label: 'Safehouse' },
+  safehouse2: { x: 2000, y: 320, label: 'Safehouse 2' },
+  taxi: { x: 560, y: 560, label: 'Taxi Rank' },
+  hospital: { x: 1280, y: 1760, label: 'Hospital' },
+  casino: { x: 1280, y: 560, label: 'Casino' },
+  garage: { x: 560, y: 1280, label: 'Spray & Save' },
+  warehouse: { x: 2000, y: 1760, label: 'Warehouse' },
+  pier: { x: 2480, y: 1280, label: 'Pier' },
+  bank: { x: 1760, y: 800, label: 'Bank' },
+  police: { x: 1040, y: 1040, label: 'Police Station' },
+  park: { x: 2240, y: 560, label: 'Marina Park' },
+  docks: { x: 2480, y: 1760, label: 'Docks' },
 };
 
-// Roof and wall colours per district feel.
-export const WALL_COLORS = ['#f2e3c6', '#f6d9b8', '#e8c9a0', '#dfe8ee', '#f0c8b8', '#e5d8b0', '#d8e4d0'];
-export const ROOF_COLORS = ['#b8543f', '#c96f4a', '#8a5a3b', '#5f7d8c', '#7a8ba0', '#a8574a', '#6b7f59'];
-export const GLASS_COLORS = ['#7fb8c9', '#6fa8c0', '#8fc4d4', '#5f9db5'];
-export const CAR_COLORS = ['#c94f43', '#3f6fb5', '#e8c53a', '#e8e4da', '#2e2e33', '#7fb069', '#d97b29', '#8e6fb8', '#4fb0a5', '#b8b8c0'];
-
-// Vehicle types: size, acceleration, top speed (px/s), grip (turn rate) and mass feel.
-export const CAR_TYPES = {
-  sedan:   { w: 46, h: 22, accel: 260, maxSpeed: 430, grip: 2.6, name: 'Solmar Sedan' },
-  coupe:   { w: 44, h: 21, accel: 320, maxSpeed: 520, grip: 3.0, name: 'Vento Coupe' },
-  sports:  { w: 46, h: 22, accel: 420, maxSpeed: 640, grip: 3.4, name: 'Falcon GT' },
-  taxi:    { w: 46, h: 22, accel: 280, maxSpeed: 450, grip: 2.7, name: 'Bay Taxi' },
-  van:     { w: 52, h: 24, accel: 200, maxSpeed: 360, grip: 2.2, name: 'Harbor Van' },
-  truck:   { w: 58, h: 26, accel: 170, maxSpeed: 330, grip: 2.0, name: 'Dock Truck' },
-  police:  { w: 47, h: 22, accel: 380, maxSpeed: 600, grip: 3.2, name: 'SBPD Cruiser' },
-  limo:    { w: 62, h: 23, accel: 240, maxSpeed: 470, grip: 2.4, name: 'Marina Limo' },
+// How a step's target reads on the HUD.
+export const STEP_TEXT = {
+  goto: 'Go to',
+  wait: 'Wait',
+  kill: 'Take out',
+  evade: 'Evade the cops',
+  lose: 'Lose the cops',
+  steal: 'Steal a car',
 };
 
-export const WEAPONS = {
-  fists:  { name: 'Fists', damage: 12, rate: 2.2, range: 34, auto: false, ammo: Infinity },
-  pistol: { name: 'Pistol', damage: 26, rate: 3.5, range: 420, auto: false, ammo: 'pistol' },
-  smg:    { name: 'SMG', damage: 16, rate: 9.0, range: 380, auto: true, ammo: 'smg' },
+export const COLORS = {
+  sedan: '#7fb069',
+  taxi: '#e8c53a',
+  sport: '#c94f43',
+  truck: '#8a7f72',
+  police: '#2b3a55',
+  orange: '#d97b29',
+  green: '#3f6fb5',
 };
 
-export const WEAPON_ORDER = ['fists', 'pistol', 'smg'];
-
-// Wanted stars from heat: heat 0-100, stars step up at these floors.
-export const STAR_HEAT = [0, 12, 32, 55, 76, 92];
-export const HEAT_DECAY_HIDDEN = 6; // heat per second while no cop sees the player
-export const HEAT_DECAY_SEEN = 0.5;
-
-export const PRICES = {
-  sprayPerStar: 150,
-  pistolAmmo: 40,
-  smg: 900,
-  smgAmmo: 120,
-  armor: 250,
-  healthSnack: 20,
-  bribe: 0,
-};
-
-// The story: nine missions for Milo Reyes, driver for fixer Vera Solano.
+// The story: nine jobs for Vera Solano. The reward column sums to 12,390.
 export const MISSIONS = [
   {
-    id: 'first-fare', title: 'First Fare', giver: 'Vera Solano', reward: 300,
-    brief: 'Vera needs a driver she can trust. Pick up her client at the Marina hotel and get him to the Casino. No scratches.',
+    id: 'first-fare',
+    title: 'First Fare',
+    reward: 550,
+    intro: 'Vera: First job, kid. Pick up a fare at the Taxi Rank and take them to the Hospital. Easy money.',
     steps: [
-      { type: 'goto', spot: 'hotel', text: 'Drive to the Marina Hotel' },
-      { type: 'wait', seconds: 2, text: 'Picking up the client…' },
-      { type: 'goto', spot: 'casino', text: 'Drive the client to the Casino' },
+      { type: 'goto', target: 'taxi', obj: 'Go to the Taxi Rank and pick up the fare' },
+      { type: 'wait', secs: 3, obj: 'Wait for the passenger to climb in' },
+      { type: 'goto', target: 'hospital', obj: 'Drop the fare at the Hospital' },
     ],
   },
   {
-    id: 'hot-wheels', title: 'Hot Wheels', giver: 'Vera Solano', reward: 500,
-    brief: 'A Falcon GT is parked outside the docks. Take it — quietly — and drop it at the chop shop. The boys pay cash.',
+    id: 'hot-wheels',
+    title: 'Hot Wheels',
+    reward: 500,
+    intro: 'Vera: Somebody parked a sweet ride by the Garage. Bring me the car, no questions.',
     steps: [
-      { type: 'goto', spot: 'docks', text: 'Go to the docks' },
-      { type: 'steal', car: 'sports', text: 'Steal the Falcon GT' },
-      { type: 'deliver', spot: 'chopshop', text: 'Deliver the Falcon GT to the chop shop' },
+      { type: 'steal', target: 'garage', obj: 'Steal a car and bring it to the Garage' },
+      { type: 'goto', target: 'warehouse', obj: 'Take the stolen car to the Warehouse' },
+      { type: 'goto', target: 'safehouse', obj: 'Park it at the Safehouse' },
     ],
   },
   {
-    id: 'the-drop', title: 'The Drop', giver: 'Vera Solano', reward: 700,
-    brief: 'A package has to reach the Old Town safehouse, and the SBPD are already sniffing around. Expect company.',
+    id: 'the-drop',
+    title: 'The Drop',
+    reward: 700,
+    intro: 'Vera: A crate is waiting at the Warehouse. Pick it up, run it to the Pier, then lay low at the Safehouse.',
     steps: [
-      { type: 'goto', spot: 'warehouse', text: 'Collect the package at the warehouse' },
-      { type: 'goto', spot: 'safehouse2', text: 'Deliver it to the Old Town safehouse', wanted: 2 },
+      { type: 'goto', target: 'warehouse', obj: 'Pick up the crate at the Warehouse' },
+      { type: 'goto', target: 'pier', obj: 'Deliver the crate to the Pier' },
+      { type: 'goto', target: 'safehouse', obj: 'Lay low at the Safehouse' },
     ],
   },
   {
-    id: 'heat-wave', title: 'Heat Wave', giver: 'Vera Solano', reward: 800,
-    brief: 'The heat is on the whole crew. Shake a three-star tail and get to the spray shop with a clean plate.',
+    id: 'heat-wave',
+    title: 'Heat Wave',
+    reward: 800,
+    intro: 'Vera: The Bank job is loud on purpose. Trip the alarm, dodge the SBPD for ten seconds, then vanish.',
     steps: [
-      { type: 'evade', seconds: 25, text: 'Survive the chase for 25 seconds', wanted: 3 },
-      { type: 'lose', text: 'Lose the cops' },
-      { type: 'goto', spot: 'garage', text: 'Get to Spray & Save' },
+      { type: 'goto', target: 'bank', obj: 'Get to the Bank and trip the alarm' },
+      { type: 'evade', secs: 10, stars: 1, obj: 'Evade the cops for 10 seconds' },
+      { type: 'lose', obj: 'Lose the cops completely' },
     ],
   },
   {
-    id: 'dockside-deal', title: 'Dockside Deal', giver: 'Vera Solano', reward: 1200,
-    brief: 'The deal at Pier 9 is a setup. The Marlowe crew is waiting. Go in loud, come out with the case.',
+    id: 'dockside-deal',
+    title: 'Dockside Deal',
+    reward: 1240,
+    intro: 'Vera: A buyer is waiting on the Pier. The deal goes south — handle the three rivals, then get clear.',
     steps: [
-      { type: 'goto', spot: 'pier', text: 'Reach Pier 9' },
-      { type: 'kill', count: 4, who: 'rivals', text: 'Take out the Marlowe crew (0/4)' },
-      { type: 'pickup', item: 'case', text: 'Grab the case' },
-      { type: 'goto', spot: 'safehouse', text: 'Bring the case home' },
+      { type: 'goto', target: 'pier', obj: 'Meet the buyer on the Pier' },
+      { type: 'kill', count: 3, obj: 'Take out 3 rivals' },
+      { type: 'goto', target: 'safehouse2', obj: 'Get clear to Safehouse 2' },
     ],
   },
   {
-    id: 'the-big-score', title: 'The Big Score', giver: 'Vera Solano', reward: 2500,
-    brief: 'The Casino vault. In and out before the alarm brings the whole city down — then lose four stars and vanish.',
+    id: 'the-big-score',
+    title: 'The Big Score',
+    reward: 2500,
+    intro: 'Vera: The big one. Hit the Bank, deal with the two guards, then celebrate at the Casino and stash the car.',
     steps: [
-      { type: 'goto', spot: 'casino', text: 'Get to the Casino' },
-      { type: 'wait', seconds: 4, text: 'Cracking the vault…' },
-      { type: 'escape', spot: 'hideout', text: 'Escape to the hideout', wanted: 4 },
+      { type: 'goto', target: 'bank', obj: 'Hit the Bank' },
+      { type: 'kill', count: 2, obj: 'Take out 2 guards' },
+      { type: 'goto', target: 'casino', obj: 'Celebrate at the Casino' },
+      { type: 'goto', target: 'garage', obj: 'Stash the car at the Garage' },
     ],
   },
   {
-    id: 'night-shift', title: 'Night Shift', giver: 'Vera Solano', reward: 1500,
-    brief: 'Vera’s cousin needs a car in the middle of the night. Pick him up at the Taxi Depot, take him to the hospital, then on to the Casino. No trouble.',
+    id: 'night-shift',
+    title: 'Night Shift',
+    reward: 1500,
+    intro: 'Vera: A long night. Taxi Rank, wait for the call, Hospital, then the Casino. Four stops, no shortcuts.',
     steps: [
-      { type: 'goto', spot: 'taxi', text: 'Drive to the Taxi Depot' },
-      { type: 'wait', seconds: 3, text: 'Picking up the cousin…' },
-      { type: 'goto', spot: 'hospital', text: 'Drive the cousin to the hospital' },
-      { type: 'goto', spot: 'casino', text: 'Drive the cousin to the Casino' },
+      { type: 'goto', target: 'taxi', obj: 'Go to the Taxi Rank' },
+      { type: 'wait', secs: 3, obj: 'Wait for the call' },
+      { type: 'goto', target: 'hospital', obj: 'Pick up at the Hospital' },
+      { type: 'goto', target: 'casino', obj: 'Drop off at the Casino' },
     ],
   },
   {
-    id: 'warehouse-raid', title: 'Warehouse Raid', giver: 'Vera Solano', reward: 1800,
-    brief: 'Marlowe’s crew grabbed the goods from the warehouse and is holding them at Pier 9. Pick up the trail at the warehouse, clear the crew out at the pier, then bring the goods back to the Old Town safehouse.',
+    id: 'warehouse-raid',
+    title: 'Warehouse Raid',
+    reward: 1800,
+    intro: 'Vera: The Warehouse is holding our cut. Raid it, run the Pier, drop three of theirs, and sleep at Safehouse 2.',
     steps: [
-      { type: 'goto', spot: 'warehouse', text: 'Go to the warehouse' },
-      { type: 'goto', spot: 'pier', text: 'Track the crew to Pier 9' },
-      { type: 'kill', count: 3, who: 'rivals', text: 'Take out the Marlowe crew (0/3)' },
-      { type: 'goto', spot: 'safehouse2', text: 'Bring the goods to the Old Town safehouse' },
+      { type: 'goto', target: 'warehouse', obj: 'Raid the Warehouse' },
+      { type: 'goto', target: 'pier', obj: 'Run the goods to the Pier' },
+      { type: 'kill', count: 3, obj: 'Take out 3 rivals' },
+      { type: 'goto', target: 'safehouse2', obj: 'Sleep at Safehouse 2' },
     ],
   },
   {
-    id: 'street-king', title: 'Street King', giver: 'Vera Solano', reward: 3000,
-    brief: 'The whole city wants to see you slip up. Shake a two-star tail, lose the cops, and get to Spray & Save to wash the plates clean.',
+    id: 'street-king',
+    title: 'Street King',
+    reward: 3000,
+    intro: 'Vera: Last job. The whole SBPD is coming for you — survive twenty seconds at two stars, lose them, and bring it home to the Garage.',
     steps: [
-      { type: 'evade', seconds: 20, text: 'Survive the chase for 20 seconds', wanted: 2 },
-      { type: 'lose', text: 'Lose the cops' },
-      { type: 'goto', spot: 'garage', text: 'Get to Spray & Save' },
+      { type: 'evade', secs: 20, stars: 2, obj: 'Survive 20 seconds at 2 stars' },
+      { type: 'lose', obj: 'Lose the cops completely' },
+      { type: 'goto', target: 'garage', obj: 'Bring it home to the Garage' },
     ],
   },
 ];
 
-export const SIDE_JOBS = {
-  taxi: { name: 'Taxi Fare', base: 60, tip: 40, text: 'Take the passenger to the marker' },
-  courier: { name: 'Courier Run', base: 90, tip: 60, text: 'Deliver the parcels before time runs out' },
-};
-
-export const DISTRICTS = [
-  { name: 'Downtown', x: 1200, y: 300, w: 1100, h: 900, tall: true },
-  { name: 'Old Town', x: 500, y: 300, w: 650, h: 900, tall: false },
-  { name: 'Harbor', x: 500, y: 1400, w: 1300, h: 700, tall: false },
-  { name: 'Beachfront', x: 0, y: 300, w: 450, h: 1800, tall: false },
-  { name: 'Hillside', x: 2400, y: 300, w: 750, h: 1800, tall: false },
-];
+export const TOTAL_REWARD = MISSIONS.reduce((sum, m) => sum + m.reward, 0);

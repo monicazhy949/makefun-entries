@@ -1,83 +1,70 @@
-// Keyboard and mouse: held keys, edge-triggered presses, and the mouse position
-// in canvas pixels. The game reads this once a frame; nothing here knows the game.
-// Nine missions, one control scheme: nothing mission-specific lives in input.
-export const ACTION_CONFIRM = 1;
-export const ACTION_PAUSE = 2;
-export const ACTION_ENTER = 4;
-export const ACTION_HORN = 8;
-export const ACTION_WEAPON = 16;
-export const ACTION_MUTE = 32;
-export const ACTION_HELP = 64;
-export const ACTION_SAVE = 128;
+// Input: keyboard and mouse for the browser game. The headless driver
+// writes the same shape of object itself, so the game reads G.input
+// through one helper no matter who drives.
 
-export function createInput(canvas) {
-  const keys = new Set();
-  const pressed = new Set();
-  const mouse = { x: 0, y: 0, down: false, clicked: false };
-
-  function code(e) {
-    return e.code;
-  }
-
-  window.addEventListener('keydown', (e) => {
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(code(e))) e.preventDefault();
-    if (!keys.has(code(e))) pressed.add(code(e));
-    keys.add(code(e));
-  });
-  window.addEventListener('keyup', (e) => keys.delete(code(e)));
-  window.addEventListener('blur', () => { keys.clear(); mouse.down = false; });
-
-  function updateMouse(e) {
-    const rect = canvas.getBoundingClientRect();
-    mouse.x = (e.clientX - rect.left) * (canvas.width / rect.width);
-    mouse.y = (e.clientY - rect.top) * (canvas.height / rect.height);
-  }
-  canvas.addEventListener('mousemove', updateMouse);
-  canvas.addEventListener('mousedown', (e) => { updateMouse(e); mouse.down = true; mouse.clicked = true; });
-  window.addEventListener('mouseup', () => { mouse.down = false; });
-  canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-
+export function createInput() {
   return {
-    keys,
-    mouse,
-    /** -1/0/1 drive axis: W/up forward, S/down back. */
-    throttle() {
-      let v = 0;
-      if (keys.has('KeyW') || keys.has('ArrowUp')) v += 1;
-      if (keys.has('KeyS') || keys.has('ArrowDown')) v -= 1;
-      return v;
-    },
-    /** -1/0/1 steer axis: A/left, D/right. */
-    steer() {
-      let v = 0;
-      if (keys.has('KeyD') || keys.has('ArrowRight')) v += 1;
-      if (keys.has('KeyA') || keys.has('ArrowLeft')) v -= 1;
-      return v;
-    },
-    handbrake() {
-      return keys.has('Space');
-    },
-    run() {
-      return keys.has('ShiftLeft') || keys.has('ShiftRight');
-    },
-    /** Edge-triggered actions, consumed on read. */
-    takeActions() {
-      let actions = 0;
-      if (pressed.has('Enter') || pressed.has('NumpadEnter') || mouse.clicked) actions |= ACTION_CONFIRM;
-      if (pressed.has('KeyP') || pressed.has('Escape')) actions |= ACTION_PAUSE;
-      if (pressed.has('KeyE')) actions |= ACTION_ENTER;
-      if (pressed.has('KeyH')) actions |= ACTION_HORN;
-      if (pressed.has('KeyQ')) actions |= ACTION_WEAPON;
-      if (pressed.has('KeyM')) actions |= ACTION_MUTE;
-      if (pressed.has('F1') || pressed.has('Slash')) actions |= ACTION_HELP;
-      if (pressed.has('KeyF')) actions |= ACTION_SAVE;
-      pressed.clear();
-      mouse.clicked = false;
-      return actions;
-    },
-    /** True while the fire button (mouse) is held. */
-    firing() {
-      return mouse.down;
-    },
+    keys: new Set(),
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+    shoot: false,
+    interact: false,
+    mouse: { x: 640, y: 400, down: false },
+  };
+}
+
+// Sync the boolean shortcuts from the keys set after any key event.
+export function syncInput(input) {
+  const has = (k) => input.keys.has(k);
+  input.up = has('w') || has('W') || has('ArrowUp');
+  input.down = has('s') || has('S') || has('ArrowDown');
+  input.left = has('a') || has('A') || has('ArrowLeft');
+  input.right = has('d') || has('D') || has('ArrowRight');
+  input.shoot = !!input.mouse.down;
+}
+
+// Wire browser events onto a canvas. Returns a cleanup function.
+export function attachInput(input, canvas, onKey) {
+  const keyDown = (e) => {
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+      e.preventDefault();
+    }
+    input.keys.add(e.key);
+    if (e.key === 'e' || e.key === 'E') input.interact = true;
+    syncInput(input);
+    if (onKey) onKey(e.key);
+  };
+  const keyUp = (e) => {
+    input.keys.delete(e.key);
+    if (e.key === 'e' || e.key === 'E') input.interact = false;
+    syncInput(input);
+  };
+  const mouseMove = (e) => {
+    const r = canvas.getBoundingClientRect();
+    input.mouse.x = e.clientX - r.left;
+    input.mouse.y = e.clientY - r.top;
+  };
+  const mouseDown = (e) => {
+    mouseMove(e);
+    input.mouse.down = true;
+    input.shoot = true;
+  };
+  const mouseUp = () => {
+    input.mouse.down = false;
+    input.shoot = false;
+  };
+  window.addEventListener('keydown', keyDown);
+  window.addEventListener('keyup', keyUp);
+  canvas.addEventListener('mousemove', mouseMove);
+  canvas.addEventListener('mousedown', mouseDown);
+  window.addEventListener('mouseup', mouseUp);
+  return () => {
+    window.removeEventListener('keydown', keyDown);
+    window.removeEventListener('keyup', keyUp);
+    canvas.removeEventListener('mousemove', mouseMove);
+    canvas.removeEventListener('mousedown', mouseDown);
+    window.removeEventListener('mouseup', mouseUp);
   };
 }

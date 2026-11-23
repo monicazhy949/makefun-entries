@@ -1,33 +1,45 @@
-// Save and load through localStorage: money, story progress, the player's spot
-// and kit. A save that fails to parse (or storage that is off) just means no save.
-// Story progress is the list of done mission ids (nine in all when the story is complete).
-import { SAVE_KEY } from './config.js';
+// Save and load: one slot in localStorage. Every call is guarded, so
+// a browser without storage and the headless game both keep working.
 
-export function loadSave() {
-  try {
-    const raw = window.localStorage.getItem(SAVE_KEY);
-    if (!raw) return null;
-    const data = JSON.parse(raw);
-    if (typeof data !== 'object' || data === null || typeof data.money !== 'number') return null;
-    return data;
-  } catch {
-    return null;
-  }
-}
+const KEY = 'solmar-bay-save-v1';
 
-export function saveGame(state) {
+export function saveGame(G) {
+  if (typeof localStorage === 'undefined') return false;
   try {
-    window.localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    const data = {
+      money: G.player.money,
+      health: G.player.health,
+      armor: G.player.armor,
+      done: G.missions.done.slice(),
+      x: Math.round(G.player.x),
+      y: Math.round(G.player.y),
+      time: Math.round(G.time),
+    };
+    localStorage.setItem(KEY, JSON.stringify(data));
     return true;
-  } catch {
+  } catch (e) {
     return false;
   }
 }
 
-export function clearSave() {
+export function loadGame() {
+  if (typeof localStorage === 'undefined') return null;
   try {
-    window.localStorage.removeItem(SAVE_KEY);
-  } catch {
-    // Ignore.
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (!data || typeof data.money !== 'number') return null;
+    return data;
+  } catch (e) {
+    return null;
+  }
+}
+
+export function clearSave() {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.removeItem(KEY);
+  } catch (e) {
+    // Storage is best effort.
   }
 }
