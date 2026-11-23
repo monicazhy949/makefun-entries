@@ -5,6 +5,7 @@
 // beside this file to /output and writes /output/dossier.json, the summary
 // the judge reads, with the vendored make.fun library.
 //
+// Nine story missions for Vera Solano live in game/src/config.js (MISSIONS).
 // Play it locally with any static server over game/ (for example
 // `npx serve game`), then open http://localhost:3000. Outside the grader's
 // container, MAKEFUN_OUTPUT_DIR stands in for /output:
