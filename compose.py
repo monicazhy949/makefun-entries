@@ -258,9 +258,9 @@ def main():
     # ---- briefs band ----
     d.rectangle([0, 948, W, H], fill=INK)
     label = "IN BRIEF   "
-    items = ("Indonesia factory fire: 7 dead, 50 missing   \u2022   "
+    items = ("Indonesia factory fire: 3 dead, 50 missing   \u2022   "
              "Gaza: four more killed   \u2022   "
-             "Alcaraz v Zverev for ATP title")
+             "Alcaraz beats Zverev for ATP title")
     # shrink the type until the whole line fits with margins
     size = 16
     while size > 10:
