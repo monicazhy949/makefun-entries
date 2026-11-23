@@ -1,21 +1,19 @@
-// Save and load: one slot in localStorage. Every call is guarded, so
-// a browser without storage and the headless game both keep working.
-
+// Solmar Bay: saving. Progress (money, finished missions) autosaves to
+// localStorage after every mission, and the title screen can continue it.
 const KEY = 'solmar-bay-save-v1';
 
 export function saveGame(G) {
-  if (typeof localStorage === 'undefined') return false;
   try {
-    const data = {
-      money: G.player.money,
-      health: G.player.health,
-      armor: G.player.armor,
-      done: G.missions.done.slice(),
-      x: Math.round(G.player.x),
-      y: Math.round(G.player.y),
-      time: Math.round(G.time),
-    };
-    localStorage.setItem(KEY, JSON.stringify(data));
+    if (typeof window === 'undefined' || !window.localStorage) return false;
+    window.localStorage.setItem(
+      KEY,
+      JSON.stringify({
+        money: G.player.money,
+        done: G.missions.done,
+        current: G.missions.current,
+        health: G.player.health,
+      }),
+    );
     return true;
   } catch (e) {
     return false;
@@ -23,23 +21,28 @@ export function saveGame(G) {
 }
 
 export function loadGame() {
-  if (typeof localStorage === 'undefined') return null;
   try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return null;
-    const data = JSON.parse(raw);
-    if (!data || typeof data.money !== 'number') return null;
-    return data;
+    if (typeof window === 'undefined' || !window.localStorage) return null;
+    const raw = window.localStorage.getItem(KEY);
+    return raw ? JSON.parse(raw) : null;
   } catch (e) {
     return null;
   }
 }
 
+export function applySave(G, save) {
+  if (!save) return false;
+  if (typeof save.money === 'number') G.player.money = save.money;
+  if (Array.isArray(save.done)) G.missions.done = save.done;
+  if (typeof save.current === 'number') G.missions.current = save.current;
+  if (typeof save.health === 'number') G.player.health = save.health;
+  return true;
+}
+
 export function clearSave() {
-  if (typeof localStorage === 'undefined') return;
   try {
-    localStorage.removeItem(KEY);
+    if (typeof window !== 'undefined' && window.localStorage) window.localStorage.removeItem(KEY);
   } catch (e) {
-    // Storage is best effort.
+    // Ignore.
   }
 }
