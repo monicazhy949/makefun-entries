@@ -92,7 +92,10 @@ export function hurtRival(G, rival, damage, angle) {
     rival.down = 999;
     G.stats.kills += 1;
     G.message('Rival down.', '#ffd76a');
-    if (G.missions.active && G.missions.active.def.id === 'dockside-deal') {
+    // Count the kill for any mission whose active step is a kill step,
+    // not just Dockside Deal — Warehouse Raid has one too.
+    const step = G.missions.active && G.missions.active.def.steps[G.missions.active.step];
+    if (step && step.type === 'kill') {
       G.missions.kills = (G.missions.kills || 0) + 1;
     }
     // Rivals drop a little cash.

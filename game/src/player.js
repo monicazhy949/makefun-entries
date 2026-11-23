@@ -1,5 +1,6 @@
 // Milo Reyes on foot and behind the wheel: walking, running, getting in and
 // out of cars, health and armour, money and weapons.
+// Money and kit carry across all nine story missions; only the active step resets.
 import { WEAPONS } from './config.js';
 import { resolveCircle } from './world.js';
 import { driveCar } from './vehicles.js';

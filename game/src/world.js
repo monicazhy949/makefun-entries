@@ -1,5 +1,6 @@
 // The city of Solmar Bay: a road grid, blocks of buildings, a beach on the west
 // edge, a park in the middle, and the named spots missions and shops live at.
+// Named spots include the taxi depot, warehouse and garage the new missions start at.
 // Everything is generated from the seed, so the same seed builds the same city.
 import { WORLD_W, WORLD_H, ROAD_W, WALK_W, WALL_COLORS, ROOF_COLORS, GLASS_COLORS, DISTRICTS } from './config.js';
 

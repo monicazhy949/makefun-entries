@@ -1,5 +1,6 @@
 // Seeded random numbers (mulberry32): the same seed always builds the same city,
 // so a screenshot scene replays exactly.
+// The same seed builds the same city for all nine missions, so replays match.
 export function createRandom(seed) {
   let state = (seed >>> 0) || 0x9e3779b9;
   function next() {

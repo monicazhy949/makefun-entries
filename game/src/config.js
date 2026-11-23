@@ -68,7 +68,7 @@ export const PRICES = {
   bribe: 0,
 };
 
-// The story: six missions for Milo Reyes, driver for fixer Vera Solano.
+// The story: nine missions for Milo Reyes, driver for fixer Vera Solano.
 export const MISSIONS = [
   {
     id: 'first-fare', title: 'First Fare', giver: 'Vera Solano', reward: 300,
@@ -122,6 +122,35 @@ export const MISSIONS = [
       { type: 'goto', spot: 'casino', text: 'Get to the Casino' },
       { type: 'wait', seconds: 4, text: 'Cracking the vault…' },
       { type: 'escape', spot: 'hideout', text: 'Escape to the hideout', wanted: 4 },
+    ],
+  },
+  {
+    id: 'night-shift', title: 'Night Shift', giver: 'Vera Solano', reward: 1500,
+    brief: 'Vera’s cousin needs a car in the middle of the night. Pick him up at the Taxi Depot, take him to the hospital, then on to the Casino. No trouble.',
+    steps: [
+      { type: 'goto', spot: 'taxi', text: 'Drive to the Taxi Depot' },
+      { type: 'wait', seconds: 3, text: 'Picking up the cousin…' },
+      { type: 'goto', spot: 'hospital', text: 'Drive the cousin to the hospital' },
+      { type: 'goto', spot: 'casino', text: 'Drive the cousin to the Casino' },
+    ],
+  },
+  {
+    id: 'warehouse-raid', title: 'Warehouse Raid', giver: 'Vera Solano', reward: 1800,
+    brief: 'Marlowe’s crew grabbed the goods from the warehouse and is holding them at Pier 9. Pick up the trail at the warehouse, clear the crew out at the pier, then bring the goods back to the Old Town safehouse.',
+    steps: [
+      { type: 'goto', spot: 'warehouse', text: 'Go to the warehouse' },
+      { type: 'goto', spot: 'pier', text: 'Track the crew to Pier 9' },
+      { type: 'kill', count: 3, who: 'rivals', text: 'Take out the Marlowe crew (0/3)' },
+      { type: 'goto', spot: 'safehouse2', text: 'Bring the goods to the Old Town safehouse' },
+    ],
+  },
+  {
+    id: 'street-king', title: 'Street King', giver: 'Vera Solano', reward: 3000,
+    brief: 'The whole city wants to see you slip up. Shake a two-star tail, lose the cops, and get to Spray & Save to wash the plates clean.',
+    steps: [
+      { type: 'evade', seconds: 20, text: 'Survive the chase for 20 seconds', wanted: 2 },
+      { type: 'lose', text: 'Lose the cops' },
+      { type: 'goto', spot: 'garage', text: 'Get to Spray & Save' },
     ],
   },
 ];

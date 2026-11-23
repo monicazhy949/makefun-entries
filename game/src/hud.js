@@ -1,5 +1,6 @@
 // Everything drawn on top of the world: health, money, wanted stars, the
 // mission objective, the minimap, messages, banners and the menu screens.
+// The objective line shows whichever of the nine story missions is active.
 // All canvas, so screenshots capture exactly what a player sees.
 import { WEAPONS, WEAPON_ORDER } from './config.js';
 import { currentObjective } from './missions.js';

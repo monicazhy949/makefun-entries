@@ -1,6 +1,7 @@
 // The renderer: a smooth follow camera and every brush stroke of the city —
 // water, sand, roads with markings, buildings with shadows and signs, trees,
 // cars with headlights and flashing light bars, people, bullets and particles.
+// The V marker moves with the story across all nine mission starts.
 // Then the HUD and menus on top.
 import { PALETTE, ROAD_W, WALK_W, CAR_TYPES } from './config.js';
 import { lightState } from './world.js';
