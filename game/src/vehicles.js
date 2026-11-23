@@ -9,7 +9,7 @@ let nextId = 1;
 export function createCar(city, rng, type, x, y, angle, driver) {
   const def = CAR_TYPES[type] || CAR_TYPES.sedan;
   return {
-    id: nextId,
+    id: nextId++, // every car gets its own id (was: all cars were id 1)
     type,
     x, y,
     angle,

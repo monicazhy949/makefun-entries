@@ -1,5 +1,6 @@
 // Keyboard and mouse: held keys, edge-triggered presses, and the mouse position
 // in canvas pixels. The game reads this once a frame; nothing here knows the game.
+// Nine missions, one control scheme: nothing mission-specific lives in input.
 export const ACTION_CONFIRM = 1;
 export const ACTION_PAUSE = 2;
 export const ACTION_ENTER = 4;

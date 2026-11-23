@@ -1,6 +1,7 @@
 // The wanted system and the SBPD: heat rises with crimes, stars follow heat,
 // cop cars chase and ram, foot cops chase and arrest, and the heat only cools
 // when no cop can see the player.
+// Wanted stars gate the evade/lose steps in Heat Wave and Street King alike.
 import { STAR_HEAT, HEAT_DECAY_HIDDEN, HEAT_DECAY_SEEN, PRICES } from './config.js';
 import { createCar } from './vehicles.js';
 import { resolveCircle, randomRoadPoint } from './world.js';

@@ -2,6 +2,7 @@
 // fixed 1/60 s steps, and the renderer paints what is there. Screens: title,
 // play, paused, busted, wasted. ?seed=N fixes the city; ?shot=chase|drive|
 // foot|title (with &seed=N) stages that scene, paints it twice and sets
+// Nine story missions; ?seed=N replays the same city and the same mission order.
 // window.__shotReady for a screenshot.
 import { STEP, WEAPONS, WEAPON_ORDER, PRICES } from './config.js';
 import { createGame, stepGame } from './game.js';

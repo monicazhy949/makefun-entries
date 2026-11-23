@@ -1,5 +1,6 @@
 // All sound is synthesized with WebAudio — no audio files, nothing to load.
 // Engine hum, siren, gunshots, explosions and UI blips, each a few oscillators.
+// All nine missions share the same jingle; complete/fail cues are reused, not per-mission.
 export function createAudio() {
   let ctx = null;
   let master = null;

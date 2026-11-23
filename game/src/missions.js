@@ -1,4 +1,4 @@
-// The story: six missions for Vera Solano, each a chain of small steps, plus
+// The story: nine missions for Vera Solano, each a chain of small steps, plus
 // two repeatable side jobs (taxi fares and courier runs). Steps are data in
 // config.js; this file runs them and tracks progress.
 import { MISSIONS, SIDE_JOBS } from './config.js';
@@ -21,7 +21,11 @@ export function createMissions(done = []) {
 /** Where the next mission starts: Vera's marker moves with the story. */
 export function missionStartSpot(G) {
   const spots = G.city.spots;
-  const starts = ['hotel', 'docks', 'warehouse', 'garage', 'pier', 'casino'];
+  const starts = ['hotel', 'docks', 'warehouse', 'garage', 'pier', 'casino', 'taxi', 'warehouse', 'casino'];
+  // Street King starts at the Casino, not the garage: the garage sits mid-block
+  // and the approach from the Old Town safehouse wedges a car against the
+  // buildings south of it; the Casino is a straight run east on the 520 road.
+  // The mission still ends at Spray & Save (its last step).
   const id = starts[Math.min(G.missions.current, starts.length - 1)];
   return { spot: id, point: spots[id] };
 }
@@ -91,7 +95,7 @@ function startStep(G) {
   }
   if (step.type === 'pickup') {
     const pier = spotPoint(G, 'pier');
-    spawnPickup(G, 'case', pier.x + 30, pier.y + 10, 0);
+    spawnPickup(G, 'case', pier.x, pier.y, 0); // on the pier marker itself, inside the 26px pickup radius
   }
 }
 

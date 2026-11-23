@@ -1,5 +1,6 @@
 // Pedestrians: they stroll the sidewalks, cross at corners, scatter when shots
 // ring out, and get knocked down when a car hits them (which the cops notice).
+// They scatter from gunfire in every mission, including the Warehouse Raid.
 import { resolveCircle, randomSidewalkPoint } from './world.js';
 
 const SHIRTS = ['#d94f3d', '#3d7bd9', '#e8c53a', '#7fb069', '#b06fb8', '#e8e4da', '#4fb0a5', '#d97b29', '#5a5a6a', '#e88fb0'];

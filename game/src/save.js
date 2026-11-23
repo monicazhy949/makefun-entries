@@ -1,5 +1,6 @@
 // Save and load through localStorage: money, story progress, the player's spot
 // and kit. A save that fails to parse (or storage that is off) just means no save.
+// Story progress is the list of done mission ids (nine in all when the story is complete).
 import { SAVE_KEY } from './config.js';
 
 export function loadSave() {

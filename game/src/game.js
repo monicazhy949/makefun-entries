@@ -1,5 +1,6 @@
 // The game object: everything the systems share, assembled in one place, and
 // the one step that advances the whole world in a fixed order. main.js runs
+// Nine story missions run through updateMissions inside that fixed step order.
 // the loop around this; shots.js stages scenes from it.
 import { createRandom } from './random.js';
 import { generateCity } from './world.js';

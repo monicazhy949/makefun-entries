@@ -3,6 +3,7 @@
 // mission ahead, the title over the live city — then plays the real rules
 // forward for a fixed number of steps with a simple autopilot, so the frame is
 // what playing really looks like and the same seed always gives the same frame.
+// The scenes stage the early missions; the later ones play by the same rules.
 import { STEP, MISSIONS } from './config.js';
 import { stepGame } from './game.js';
 import { createCar } from './vehicles.js';
