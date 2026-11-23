@@ -1,8 +1,8 @@
 # Solmar Bay
 
-[![make.fun](https://img.shields.io/badge/make.fun-bounty-blue)](https://make.fun/bounty/gta6-01)
-[![rank](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fmake.fun%2Fapi%2Fcompetitions%2Fgta6-01%2Frank%2Fmonicazhy949%2Fmakefun-entries&query=%24.rank&label=rank)](https://make.fun/bounty/gta6-01)
-[![reward](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fmake.fun%2Fapi%2Fcompetitions%2Fgta6-01%2Frank%2Fmonicazhy949%2Fmakefun-entries&query=%24.reward&label=reward)](https://make.fun/bounty/gta6-01)
+[![make.fun · gta6-01](https://make.fun/badge/gta6-01.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
+[![rank](https://make.fun/badge/gta6-01/monicazhy949/makefun-entries/rank.svg)](https://make.fun/bounty/gta6-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
+[![reward](https://make.fun/badge/gta6-01/monicazhy949/makefun-entries/reward.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 
 An open-world crime game for the [make.fun gta6-01 bounty](https://make.fun/bounty/gta6-01): **Solmar Bay**, a sun-soaked coastal city where you run nine jobs for the fixer Vera Solano, outrun the SBPD, and end the night as Street King.
 
@@ -43,7 +43,7 @@ A road grid with buildings, parks, the waterfront, and named places: the pier, t
 | 8 | Warehouse Raid | $1,800 | Warehouse → pier → three rivals → safehouse |
 | 9 | Street King | $3,000 | Survive 20 seconds at two stars, lose the cops, reach the garage |
 
-Finish all nine and the final take is **$12,390**.
+Finish all nine and the final take is **$12,590**.
 
 ## Files
 
