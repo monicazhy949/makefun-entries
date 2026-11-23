@@ -4,58 +4,78 @@
 [![rank](https://make.fun/badge/gta6-01/monicazhy949/makefun-entries/rank.svg)](https://make.fun/bounty/gta6-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 [![reward](https://make.fun/badge/gta6-01/monicazhy949/makefun-entries/reward.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 
-An open-world crime game for the [make.fun gta6-01 bounty](https://make.fun/bounty/gta6-01): **Solmar Bay**, a sun-soaked coastal city where you run nine jobs for the fixer Vera Solano, outrun the SBPD, and end the night as Street King.
+An open-world crime game in the spirit of GTA 6, built for
+[make.fun's gta6-01 bounty](https://make.fun/bounty/gta6-01). Explore the
+sun-soaked city of Solmar Bay on foot and by car, steal rides, dodge the
+police, and run nine jobs for the fixer Vera Solano. A clean full run pays
+**$12,590**.
 
 ## Play
 
-Open `game/index.html` in a desktop browser — no server, no network, no build step.
+Serve `game/` with any static file server and open `game/index.html` in a
+desktop browser. No build step, no network requests: every file the game
+loads lives under `game/`.
 
-- **WASD** — drive / walk
-- **E** — get in a car (or get out)
+```sh
+node --experimental-strip-types main.ts   # also writes out/ via MAKEFUN_OUTPUT_DIR
+```
+
+Or serve the folder directly:
+
+```sh
+npx serve game
+```
+
+## Controls
+
+- **WASD / arrows** — drive and walk (Shift runs on foot, Space is the handbrake)
+- **E** — enter and exit cars
 - **Mouse** — aim, **click** — shoot
-- **F** — Spray & Save (repaint the car, clear the wanted level, priced per star)
-- **P** — pause, **H** — help, **L** — snapshot
+- **L** — save a screenshot, **P** — pause, **Enter** — start / continue
 
 ## The city
 
-A road grid with buildings, parks, the waterfront, and named places: the pier, the bank, the hospital, the casino, the warehouse, the garage (Spray & Save), the police station, the taxi stand, and two safehouses. Everything runs on a seeded, deterministic RNG, so the same seed plays the same city.
+A road grid with a taxi stand, hospital, casino, garage, warehouse, police
+station, spray shop, two safehouses and the pier, with traffic and
+pedestrians on the streets, the sea along the east edge, and a HUD with a
+minimap, wanted stars, health and cash.
+
+## Missions
+
+| # | Job | Payout |
+|---|-----|-------:|
+| 1 | First Fare | $550 |
+| 2 | Hot Wheels | $500 |
+| 3 | The Drop | $700 |
+| 4 | Heat Wave | $800 |
+| 5 | Dockside Deal | $1,240 |
+| 6 | The Big Score | $2,500 |
+| 7 | Night Shift | $1,500 |
+| 8 | Warehouse Raid | $1,800 |
+| 9 | Street King | $3,000 |
+|   | **Full run** | **$12,590** |
 
 ## Systems
 
-- **Vehicles** — sedans, taxis, sports cars, trucks and police cruisers, each with its own speed and handling; cars take damage, smoke and wreck; every car has a unique id.
-- **Wanted** — crimes raise heat, heat sets the star level (1–5). Cop cars chase and ram, foot cops chase and arrest, and heat only cools when no cop can see you. Getting busted costs a fine and a trip to the station; getting wasted costs a fine and a trip to the hospital.
-- **Combat** — shoot rivals with the mouse; kills only count while a kill step is active.
-- **Pedestrians** — the city walks its sidewalks and runs when shots ring out.
-- **Money, health, armour** — jobs pay out, the HUD tracks it all, and a minimap keeps the job marker in view.
-- **Save** — progress autosaves to localStorage every ten seconds.
+- **Driving** — arcade handling, traffic that follows the roads, cars to
+  steal (including the Falcon GT)
+- **Wanted** — heat rises with crime, stars follow, patrol cars chase and
+  ram, foot cops close in and make the bust; lay low to cool off
+- **Combat** — aim and shoot on foot, rivals shoot back, kills only count
+  on kill steps
+- **Progression** — mission payouts, autosave after every job, continue
+  from the title screen with C
 
-## The nine jobs
+## Layout
 
-| # | Job | Pay | The work |
-|---|-----|-----|----------|
-| 1 | First Fare | $550 | Take the taxi from the stand to the casino |
-| 2 | Hot Wheels | $500 | Steal a ride and bring it to the garage |
-| 3 | The Drop | $700 | Pick up the crate on the pier and deliver it |
-| 4 | Heat Wave | $800 | Trip the bank alarm and get out with the heat on |
-| 5 | Dockside Deal | $1,240 | Meet at the pier and deal with three rivals |
-| 6 | The Big Score | $2,500 | Hit the bank, then the warehouse, then vanish |
-| 7 | Night Shift | $1,500 | Taxi → wait → hospital → casino |
-| 8 | Warehouse Raid | $1,800 | Warehouse → pier → three rivals → safehouse |
-| 9 | Street King | $3,000 | Survive 20 seconds at two stars, lose the cops, reach the garage |
+- `main.ts` — the entry program: copies `game/` and `screenshots/` to the
+  output directory and writes `dossier.json`
+- `game/index.html` — the page; `game/src/` holds one module per system
+  (`world`, `vehicles`, `pedestrians`, `player`, `combat`, `police`,
+  `missions`, `game`, `render`, `hud`, `input`, `audio`, `save`, `shots`)
+- `screenshots/` — four real renders of the game
+- `vendor/makefun-game.ts` — the kit's dossier library, unchanged
 
-Finish all nine and the final take is **$12,590**.
+## License
 
-## Files
-
-- `game/index.html` — the page; open it and play
-- `game/src/` — the game, one module per system (`game.js` loop, `world.js` city, `vehicles.js`, `player.js`, `police.js`, `combat.js`, `missions.js`, `pedestrians.js`, `render.js`, `hud.js`, `input.js`, `audio.js`, `save.js`, `shots.js`, `config.js`, `random.js`, `main.js`)
-- `main.ts` — the entry point: copies `game/` and `screenshots/` to `/output` and writes `dossier.json` (Node 22, standard library only)
-- `screenshots/` — four dossier shots; the first by name is the cover
-
-## Run the entry
-
-```sh
-mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
-```
-
-`out/` then holds `game/`, `screenshots/` and `dossier.json`.
+MIT. See `LICENSE`.
